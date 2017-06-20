@@ -66,6 +66,26 @@
       stroke-miterlimit: 10.00;
     }
   ]]></style>
+    <clipPath
+       id="cpODguODI4fDU5NS44MzF8MzEzLjkxMnwyMy40OTQ0-2">
+      <rect
+         x="88.830002"
+         y="23.49"
+         width="507"
+         height="290.42001"
+         id="rect13-4"
+         style="fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10" />
+    </clipPath>
+    <clipPath
+       id="cpODguODI4fDU5NS44MzF8MzEzLjkxMnwyMy40OTQ0-5">
+      <rect
+         x="88.830002"
+         y="23.49"
+         width="507"
+         height="290.42001"
+         id="rect13-1"
+         style="fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10" />
+    </clipPath>
   </defs>
   <defs
      id="defs10">
@@ -86,7 +106,10 @@
      style="fill:#ffffff;stroke:none;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10"
      id="rect8"
      x="0"
-     y="0" />
+     y="0.26965937"
+     inkscape:export-filename="/tmp/rect8.png"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300" />
   <g
      id="g4468"
      style="stroke-width:0.30000001;stroke-miterlimit:10;stroke-dasharray:none"
@@ -240,14 +263,6 @@
      id="circle61"
      transform="translate(-0.26965937,9.6179562)" />
   <circle
-     cx="379.32001"
-     cy="224.55"
-     r="21.637499"
-     style="fill:#ff0000;fill-opacity:0.5;stroke:#ffffff;stroke-width:0.70999998;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:0.5"
-     clip-path="url(#cpODguODI4fDU5NS44MzF8MzEzLjkxMnwyMy40OTQ0)"
-     id="circle63"
-     transform="translate(-0.26965937,9.6179562)" />
-  <circle
      cx="319.57001"
      cy="224.55"
      r="21.375"
@@ -279,6 +294,14 @@
      clip-path="url(#cpODguODI4fDU5NS44MzF8MzEzLjkxMnwyMy40OTQ0)"
      id="circle71"
      transform="translate(-0.26965937,9.6179562)" />
+  <circle
+     cx="379.32001"
+     cy="224.55"
+     r="21.637499"
+     style="fill:#ff0000;fill-opacity:0.5;stroke:#ffffff;stroke-width:0.70999998;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:0.5"
+     clip-path="url(#cpODguODI4fDU5NS44MzF8MzEzLjkxMnwyMy40OTQ0)"
+     id="circle63"
+     transform="matrix(0.73024866,0,0,0.73024866,98.119916,70.123127)" />
   <circle
      cx="333.79001"
      cy="224.55"
@@ -1222,37 +1245,37 @@
      id="path4848"
      inkscape:connector-curvature="0" />
   <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.43101612;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:0.43101612, 0.86203223;stroke-dashoffset:0;stroke-opacity:1"
-     d="m 426.84932,155.06934 -31.77689,64.42767"
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.46973324;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:0.46973322, 0.93946645;stroke-dashoffset:0;stroke-opacity:1"
+     d="m 426.83034,155.07854 -35.24449,68.99348"
      id="path4850"
      inkscape:connector-curvature="0" />
   <g
-     id="g4854"
-     transform="translate(-0.26965937,1.6179562)">
+     id="g4952"
+     transform="translate(-14,0)">
     <rect
-       y="129.96089"
-       x="392.87402"
-       height="23.769358"
-       width="76.083282"
+       y="131.56364"
+       x="405.53281"
+       height="23.799765"
+       width="63.17004"
        id="rect4580-8-9-0-5"
-       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#4d4d4d;stroke-width:0.34466779;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:0.34466781, 0.6893356;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#4d4d4d;stroke-width:0.31426013;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:0.31426014, 0.62852026;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     <text
        sodipodi:linespacing="120%"
        id="text4532-46-3-7-16"
-       y="139.95793"
-       x="463.0051"
+       y="141.57588"
+       x="462.73544"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:120.00000477%;font-family:'Playfair Display';-inkscape-font-specification:'Playfair Display, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        xml:space="preserve"><tspan
          style="font-style:italic;font-variant:normal;font-weight:300;font-stretch:normal;font-size:7.5px;line-height:120.00000477%;font-family:Lato;-inkscape-font-specification:'Lato, Light Italic';text-align:end;writing-mode:lr-tb;text-anchor:end"
-         y="139.95793"
-         x="463.0051"
+         y="141.57588"
+         x="462.73544"
          id="tspan4534-9-8-8-02"
          sodipodi:role="line">World War II</tspan><tspan
          style="font-style:italic;font-variant:normal;font-weight:300;font-stretch:normal;font-size:7.5px;line-height:120.00000477%;font-family:Lato;-inkscape-font-specification:'Lato, Light Italic';text-align:end;writing-mode:lr-tb;text-anchor:end"
          id="tspan4536-2-8-0-2"
-         y="148.95793"
-         x="463.0051"
-         sodipodi:role="line">11-15 million victims</tspan></text>
+         y="150.57588"
+         x="462.73544"
+         sodipodi:role="line">10 million victims</tspan></text>
   </g>
   <text
      xml:space="preserve"
@@ -1278,4 +1301,12 @@
        x="45"
        y="67.999596"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:60px;line-height:150%;font-family:IPAMincho;-inkscape-font-specification:'IPAMincho, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#4d4d4d;fill-opacity:1">&quot;</tspan></text>
+  <circle
+     cx="379.32001"
+     cy="224.55"
+     r="21.637499"
+     style="fill:#ff0000;fill-opacity:0.5;stroke:#ffffff;stroke-width:0.70999998;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:0.5"
+     clip-path="url(#cpODguODI4fDU5NS44MzF8MzEzLjkxMnwyMy40OTQ0-5)"
+     id="circle63-9"
+     transform="matrix(0.73024866,0,0,0.73024866,102.36791,69.822061)" />
 </svg>
