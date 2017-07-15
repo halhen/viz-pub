@@ -1,0 +1,80 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+(Not meant as a serious effort, so code is served... as-is)
+
+```{r}
+
+df.sum %>%
+  select(tufnwgtp, tuyear, matches('t1301..')) %>%
+  gather(key, time, matches('t1301..')) %>%
+  group_by(key, tuyear) %>%
+  summarize(time = sum(time * tufnwgtp)/sum(tufnwgtp)) %>%
+  filter(all(time > 0)) %>%
+  nest() %>%
+  mutate(model = map(data, ~lm(log(time) ~ tuyear, data=.)),
+         tidymodel = map(model, broom::tidy)) %>%
+  unnest(tidymodel) %>%
+  ungroup() %>%
+  mutate(trcodep = as.integer(substring(key, 2)))  %>%
+  inner_join(df.actcode, by=c('trcodep'='activity')) %>%
+  filter(term == 'tuyear') %>%
+  transmute(activity = name,
+            growth = estimate) %>%
+  write_tsv('growth.tsv')
+  
+```
+
+
+
+
+```{r}
+library(tidyverse)
+source('henrik.r') # for the horribly named theme_henrik
+
+df <- read_tsv('activity.tsv') 
+
+df.growth <- read_tsv('growth.tsv')
+
+
+df %>%
+  # Remove the ones that turned out to touch the circle twice -- this if for shits and giggles, not for real
+  filter(!grepl('football', activity), 
+         !grepl('Skiing', activity),
+         !grepl('Boating', activity)) %>%
+  group_by(activity) %>%
+  filter(max(p) > 3e-04, # Keep the most popular ones
+         !grepl('n\\.e\\.c', activity)) %>% # Remove n.e.c. (not elsewhere classified)
+  arrange(time) %>%
+  mutate(peak = time[[which.max(p)]],
+         p_total = p / sum(p)) %>%
+  summarize(before_lunch = sum(p_total * (time < 12*60)),
+            after_lunch = 1 - before_lunch,
+            peak = first(peak)) %>%
+  mutate(peak = -peak + 6 * 60) %>% # Rotate clock
+  inner_join(df.growth, by='activity') %>%
+  ungroup() %>%
+  mutate(circle.x = cos(2 * pi * peak / (24*60)),
+         circle.y = sin(2 * pi * peak / (24*60)),
+         p.growth = growth / (1.2 * max(abs(growth))),
+         growth.angle = p.growth * 0.5 * pi,
+         segment.after.x = circle.x + cos(growth.angle) * after_lunch,
+         segment.before.x = circle.x - cos(growth.angle) * before_lunch,
+         segment.after.y = circle.y + sin(growth.angle) * after_lunch,
+         segment.before.y = circle.y - sin(growth.angle) * before_lunch) %>%
+  ggplot(aes(color = factor(as.integer(factor(activity)) %% 9))) +
+    geom_polygon(data=tibble(angle = seq(0, 2 * pi, length.out=300)), aes(x = cos(angle), y=sin(angle)), fill=NA, color='black', size=2) +
+    geom_segment(aes(x = segment.before.x, xend = segment.after.x,
+                     y = segment.before.y, yend = segment.after.y), size=2) +
+    scale_x_continuous(breaks=NULL, limits=c(-2.5, 2.5)) +
+    scale_y_continuous(breaks=NULL, limits=c(-2.5, 2.5)) +
+    coord_equal() +
+    scale_color_brewer(palette='Set1') +
+    labs(x="", y="") +
+    theme_henrik(grid='', legend.position='none')
+
+ggsave('/tmp/depeche.svg', width=9, height=9)
+```
+
