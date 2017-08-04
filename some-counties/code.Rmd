@@ -1,0 +1,131 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+df <- read_tsv('data/region_5y.scb', locale=locale(encoding='iso8859-1')) %>%
+  transmute(region,
+            age=gsub(' .*', '', ålder),
+            gender=ifelse(kön == 'män', 'm', 'f'),
+            year=år,
+            n=Folkmängd) %>%
+  separate(region, into=c('kncode', 'region'), extra='merge') %>%
+  mutate(code = as.integer(kncode),
+         start.age = as.integer(gsub('[^0-9].*', '', age))) %>%
+  mutate(age = factor(age, ordered=TRUE, levels=unique(age[order(start.age)])))
+```
+
+
+```{r}
+
+# Cluster / classify
+
+df.tmp <- df %>%
+  group_by(gender, age) %>%
+  group_by(region) %>%
+  mutate(p = n/sum(n)) %>%
+  mutate(group = paste0(age, '.', gender)) %>%
+  ungroup() %>%
+  transmute(region, group, p) %>%
+  spread(group, p)
+
+set.seed(1)
+df.tmp$group <- dist(df.tmp %>% select(-region)) %>%
+  hclust() %>% {
+    #plot(.)
+    .
+  } %>%
+  cutree(5)
+
+df <- df %>%
+  inner_join(df.tmp %>%
+                mutate(group = c(2, 4, 5, 3, 1)[group]) %>%
+                transmute(region, group))
+
+```
+
+
+
+
+```{r}
+df.all <- df %>%
+  group_by(start.age = pmin(100, start.age)) %>%
+  summarize(n = sum(n)) %>%
+  ungroup() %>%
+  mutate(p = n / sum(n)) %>%
+  transmute(start.age, p) %>%
+  mutate(age.group = ifelse(start.age < 95, paste0(start.age, '-', start.age+4), '95+'),
+         age.group = reorder(age.group, start.age, order=TRUE))
+
+df %>%
+  group_by(group, start.age = pmin(95, start.age)) %>%
+  summarize(n = sum(n)) %>%
+  group_by(group) %>%
+  mutate(p = n / sum(n)) %>%
+  ungroup() %>%
+  transmute(group, start.age, p) %>%
+  mutate(age.group = ifelse(start.age < 95, paste0(start.age, '-', start.age+4), '95+'),
+         age.group = reorder(age.group, start.age, order=TRUE)) %>%
+  ggplot(aes(x = start.age, y = p)) +
+    geom_col(aes(fill = factor(group))) +
+    geom_step(data = df.all, group=1) +
+    scale_fill_manual(values = c('1'='#9C5220', '2'='#F6A68B', '3'='#FBDCCE', '4'='#5690CB', '5'='#006AA2')) +
+    scale_y_continuous(labels = scales::percent, breaks=c(0, 2, 4, 6, 8, 10) / 100) +
+    #coord_flip() +
+    facet_wrap(~ group, nrow=1) +
+    theme_henrik(grid="", legend.position = 'none') +
+    theme(axis.ticks.y = element_line())
+
+ggsave('pyramids.svg', width=12, height=2.5)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+library(rgdal)
+map <- readOGR(dsn='kommun', layer='kommun')
+map <- spTransform(map, CRS("+proj=longlat +datum=WGS84"))
+
+df.tmp <- df %>%
+  group_by(kncode) %>%
+  summarize(type = first(group))
+
+map@data$id = rownames(map@data)
+map_df <- fortify(map)
+
+df.tmp2 <- left_join(left_join(map_df, map@data, by='id'), df.tmp, by=c('KNKOD'='kncode'))
+
+df.tmp2 %>%
+  ggplot(aes(long, lat, group=KNKOD, fill=factor(type))) +
+    geom_polygon(color='white', size=0.05, show.legend=FALSE) +
+    scale_fill_manual(values = c('1'='#9C5220', '2'='#F6A68B', '3'='#FBDCCE', '4'='#5690CB', '5'='#006AA2')) +
+    ggthemes::theme_map() +
+    coord_map("ortho", orientation = c(57.7, 14.2, 0))
+
+
+ggsave('out.svg', width=6, height=12)
+
+```
+
+
+
