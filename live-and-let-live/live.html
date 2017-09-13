@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- It's not pretty code, but it's me dipping my toes in d3 / interactive vizes. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta name="twitter:title" content="Live and Let Live">
+<meta name="twitter:description" content="The relation between life satisfaction and gay acceptance">
+<meta name="twitter:image" content=" screenshot.png">
+<meta name="twitter:card" content="summary">
+
+<link href="https://fonts.googleapis.com/css?family=Lato|Playfair+Display" rel="stylesheet"> 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+
+<style>
+
+body {
+  font: 1em 'Lato', sans-serif;
+}
+
+.footer {
+  font-size: 0.8em;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 0.5em;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #666;
+  shape-rendering: crispEdges;
+}
+
+.label {
+  fill: #666;
+  size: 6px;
+}
+
+circle {
+  fill: #868E96;
+  stroke: #fff;
+}
+
+.dothighlight {
+  fill: #111122;
+}
+
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="row justify-content-md-center"><div class="col-10">
+    <h1>Live and let live</h1>
+    <p>Between 2002 and 2014, the proportion of Europeans who agreed that "<i>gay men and lesbians should be free to live their own life as they wish</i>" increased from about 70% to 80% &mdash; at least in the 16 countries that have answered all seven rounds of the <a href="http://www.europeansocialsurvey.org/">European Social Survey</a>. There are still big differences between geographical regions. Slicing the most recent data by region &mdash; subdivisions of countries &mdash; show that there are regions still well below 20% of inhabitants in agreement with the statement.</p>
+
+    <p>Looking for correlations in the data, I found many of the factors I expected to correlate with less gay acceptance: religiosity, right leaning politics vs left leaning ditto, believing that traditions and customs are important. Many more showed  nothing. Though one factor jumped out and surprised me: life satisfaction.<p>
+
+    <p>"<i>All things considered, how satisfied are you with your life as a whole nowadays?</i>", with answers ranging from 0 (extremely dissatisfied) to 10 (extremely satisfied), showed roughly the same correlation and strength as religiosity. The more satisfied you are with life, the more likely you are to agree with gays living as they wish.</p>
+
+    <p>I decided to aggregate the numbers by region an see what would come out of it. Each point in the chart below is a region. The point size represent the number of people living in each region.</p>
+  </div></div>
+  <div class="row justify-content-md-center">
+  <div class="col-10">
+  <a class="btn btn-outline-secondary btnstf" href="#" role="button" onClick="set_x('stf'); return false;">Life satisfaction</a> 
+  <a class="btn btn-outline-secondary btnrlg" href="#" role="button" onClick="set_x('rlg'); return false;">Religiosity</a></div>
+  </div>
+  <div class="row"><div class="col">
+    <svg id="main_chart" width="100%" style="margin-bottom: 2em"><svg>
+  </div></div>
+  <div class="row justify-content-md-center"><div class="col-10">
+    <p>Towards the bottom of the chart, representing less acceptance of gays living their life, is Russia, Ukraine, and Lithuania. Parts of Eastern Europe <a href="https://www.washingtonpost.com/world/europe/gay-rights-in-eastern-europe-a-new-battleground-for-russia-and-the-west/2015/07/24/8ad04d4e-2ff2-11e5-a879-213078d03dd3_story.html?utm_term=.5df5dca98b94">remain a place of intense work for gay rights activists</a>. This view shows a solid relationship between the two variables when aggregated by region with an R<sup>2</sup> of about 0.6 for a linear approximation.</p>
+
+    <p>To compare, let's check another important factor for gay acceptance: religiosity. The more religious you are, the less likely you are to accept gays living as they wish. Doing the same aggregation by regions' religiosity vs gay acceptance shows another surprise, though. The relationship is anything but convincing. For example Italy, being the most religious country in the data, holds a higher acceptance percentage than Czech Republic, being the least. As it turns out, the linear R<sup>2</sup> when aggregating by region is non-existent: 0.02.</p>
+
+    <p>Much of the initial correlation between life satisfaction and gay acceptance can be accounted for through geography. For all data, not controlling for region, the difference between the least satisfied and the most satisfied people in terms of gay acceptance was about 6x, in terms of odds. Controlling for geography, the difference between the two extremes become about 2x. The same does not hold true for religon: the differences between the non- and very religious stay about 5x whether we control for geography or not.</p>
+
+    <p>Obviously correlation and causation are two different things, and this little investigation doesn't make out which the several different arguments you could make is better. Still, surprises are always worth noting. I'm not sure how to interpret the results. For example, do they reasonably point in the direction of religion being more of an adjustment to the context in which a person lives, while life satisfaction could describe more of the context itself?</p>
+
+    <p>Perhaps one might argue that Italy is an outlier and which should be removed to tell a diffent story? Perhaps one might instead argue that Italy proves that a country can be simultaneously religious and still allow others to live as they wish?</p>
+
+    <p>Either way, you'll find my Swedish self towards the upper right corner of satisfaction/acceptance. Viewing the world through this lens, I'll settle with confirming that not only is "Live and let live" prescriptive, but also descriptive.</p>
+  </div></div>
+
+  <div class="row justify-content-md-center"><div class="col-10 footer">
+    <hr style="border-top: 4px double #aaa;"/>
+    <p>I used data from round 6 and 7 of the <a href="http://www.europeansocialsurvey.org/data/">European Social Survey</a>. The gay acceptance percentage is discretized by using "Agree strongly" and "Agree" in the five point likert scale as simply agreeing.</p>
+
+    <p>The survey documentation warns that the sample size in each region is too small to be representative of each region's attitudes, but that each country has a large enough sample to be representative. To dampen the variation, I did not use the raw scores from each region, but instead used the <tt>lme4::lmer</tt> function in <tt>R</tt> to model the attitudes of gay acceptance, life satisfaction and religiosity through a hierarchical regression.</p>
+
+    <p>I'm on <a href="https://twitter.com/hnrklndbrg">Twitter as @hnrklndbrg</a> if you'd like to comment or get in touch!</p>
+  </div></div>  
+
+
+</div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var radius = d3.scale.sqrt()
+    .range([0, 40]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .tickFormat(d3.format(".0%"))
+    .orient("left");
+
+var svg = d3.select("#main_chart")
+    .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var tooltip = svg.append("g")
+  .append("text")
+    .attr("x", width)
+    .attr("y", 0)
+    .style("text-anchor", "end")
+    .style("visibility", "hidden")
+    .text("");
+
+var circles;
+
+d3.tsv("data.tsv", function(error, data) {
+  if (error) throw error;
+
+  data.forEach(function(d) {
+    d.hms = +d.hms;
+    d.stf = +d.stf;
+    d.rgl = +d.rlg;
+    d.weight = +d.weight;
+  });
+
+
+  x.domain(d3.extent(data, function(d) { return d.stf; })).nice();
+  y.domain([0, 1]);
+  radius.domain([0, d3.max(data, function(d) { return d.weight; })]);
+
+  svg.append("g")
+      .attr("class", "x axis xaxis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label xlabel")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("");
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Let gay and lesbians live as they please");
+
+  circles = svg.selectAll(".dot")
+      .data(data.sort(function(x, y){
+         return d3.descending(x.weight, y.weight);
+      }))
+    .enter();
+
+  circles.append("circle")
+      .attr("class", "dot")
+      .attr("r", function(d) { return radius(d.weight); })
+      .attr("cx", function(d) { return x(d.stf); })
+      .attr("cy", function(d) { return y(d.hms); })
+      .on("mouseover", function(d) {
+        svg.selectAll(".dothighlight")
+           .transition()
+           .delay(250)
+           .style("visibility", "hidden");
+        return tooltip.style("visibility", "hidden");
+      })
+      .on("mousemove", function(d) {
+        // Test if there is nothing highlighted right now.
+        if (d3.sum(d3.selectAll(".dothighlight")[0].map(function(circle) {
+          return circle.style['visibility'] != 'hidden';
+        })) > 0) {
+          return;
+        }
+
+        svg.selectAll(".dothighlight")
+           .filter(function(d2) {return d.country == d2.country; })
+           .style("visibility", "visible");
+      });
+
+  circles.append("circle")
+      .attr("class", "dothighlight")
+      .attr("r", function(d) { return radius(d.weight); })
+      .attr("cx", function(d) { return x(d.stf); })
+      .attr("cy", function(d) { return y(d.hms); })
+      .style("visibility", "hidden")
+      .on("mouseover", function(d) {
+        svg.selectAll(".dothighlight")
+           .transition(); // Cancel mouseout transitions
+
+        if (d.region_name !== '') {
+          tooltip.text(d.country + ': ' + d.region_name);
+        } else {
+          tooltip.text(d.country);
+        }
+        return tooltip.style("visibility", "visible");
+      })
+      .on("mouseout", function(d) {
+        svg.selectAll(".dothighlight")
+           .transition()
+           .delay(250)
+           .style("visibility", "hidden");
+        return tooltip.style("visibility", "hidden");
+      });
+
+
+  set_x('stf');
+
+ 
+});
+
+function set_x(dim) {
+  if (dim == 'stf') {
+    x.domain(d3.extent(d3.selectAll("circle").data(), function(d) { return d.stf; })).nice();
+    d3.selectAll("circle")
+      .transition().duration(1000)
+      .attr("cx", function(d) { return x(d.stf); });
+    d3.selectAll(".xlabel")
+      .text("Life satisfaction (0: extremely dissatisfied, 10: extremely satisfied)")
+
+    d3.selectAll(".btnstf")
+      .classed("btn-outline-secondary", false)
+      .classed("btn-secondary", true);
+
+    d3.selectAll(".btnrlg")
+      .classed("btn-outline-secondary", true)
+      .classed("btn-secondary", false);
+  }
+  else if (dim == 'rlg') {
+    x.domain(d3.extent(d3.selectAll("circle").data(), function(d) { return d.rlg; })).nice();
+    d3.selectAll(".xlabel")
+      .text("Religiosity (0: not at all religious, 10: very religious)")
+    d3.selectAll("circle")
+      .transition().duration(500)
+      .attr("cx", function(d) { return x(d.rlg); });
+
+    d3.selectAll(".btnrlg")
+      .classed("btn-outline-secondary", false)
+      .classed("btn-secondary", true);
+
+    d3.selectAll(".btnstf")
+      .classed("btn-outline-secondary", true)
+      .classed("btn-secondary", false);
+  }
+
+
+
+  svg.select(".xaxis")
+    .transition().duration(500)
+    .call(xAxis);
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(haven)
+
+```
+
+# To run this, download data and place accordingly
+
+```{r}
+
+df.tmp <- rbind(
+    read_spss('../data/ess/ESS7e02_1.sav') %>%
+      select(name, pspwght, pweight, cntry, region, freehms, stflife, rlgdgr),
+    read_spss('../data/ess/ESS6e02_3.sav') %>%
+      select(name, pspwght, pweight, cntry, region, freehms, stflife, rlgdgr)
+  ) %>%
+  mutate(weight = pspwght * pweight) %>%
+  transmute(name, cntry, region, weight,
+            freehms = na_if(freehms, 8),
+            stflife = na_if(stflife, 88),
+            rlgdgr = na_if(rlgdgr, 88)) %>%
+  na.omit()
+
+
+# Region names are here... well, most of them. And I can't be bothered to find the rest
+df.nuts <- read_csv('NUTS_2013L_20170912_205724.csv')
+```
+
+
+# Model responses to pool variation
+
+```{r}
+
+
+summary(lmer.out <- lme4::lmer(freehms <= 2 ~ (1 | cntry/region), weights = weight, data=df.tmp, family=binomial(link = 'logit')))
+summary(lmer.out.stf <- lme4::lmer(stflife ~ (1 | cntry/region), weights = weight, data=df.tmp))
+summary(lmer.out.rlg <- lme4::lmer(rlgdgr ~ (1 | cntry/region), weights = weight, data=df.tmp))
+
+
+summary(glm.out.nogeo <- glm(freehms <= 2 ~ stflife + rlgdgr, weights = weight, data=df.tmp, family=binomial(link = 'logit')))
+summary(lmer.out.all <- lme4::lmer(freehms <= 2 ~ (1 | cntry/region) + stflife + rlgdgr, weights = weight, data=df.tmp, family=binomial(link = 'logit')))
+
+summary(glm.out.nogeo)
+summary(lmer.out.all)
+
+
+1/exp(11 * -0.1467)
+exp(11*0.065)
+
+```
+
+
+
+
+```{r}
+
+modelr::data_grid(df.tmp, nesting(cntry, region)) %>%
+  group_by(nest = 1) %>%
+  nest() %>%
+  mutate(pred = map(data, ~predict(lmer.out, newdata=., type='response'))) %>%
+  unnest(data, pred) %>%
+  rename(pred.hms = pred) %>%
+  inner_join(
+    modelr::data_grid(df.tmp, nesting(cntry, region)) %>%
+      group_by(nest = 1) %>%
+      nest() %>%
+      mutate(pred = map(data, ~predict(lmer.out.stf, newdata=., type='response'))) %>%
+      unnest(data, pred) %>%
+      rename(pred.stf = pred),
+    by=c('cntry', 'region')
+  ) %>%
+  inner_join(
+    modelr::data_grid(df.tmp, nesting(cntry, region)) %>%
+      group_by(nest = 1) %>%
+      nest() %>%
+      mutate(pred = map(data, ~predict(lmer.out.rlg, newdata=., type='response'))) %>%
+      unnest(data, pred) %>%
+      rename(pred.rlg = pred),
+    by=c('cntry', 'region')
+  ) %>%
+  inner_join(df.tmp %>% group_by(cntry, region) %>% summarize(p.stf = sum(stflife * weight)/sum(weight), p.hms = sum((freehms <= 2)*weight)/sum(weight), weight = sum(weight)/n_distinct(name))) %>%
+  mutate(cntry = countrycode::countrycode(cntry, origin='iso2c', destination='country.name'),
+         cntry = coalesce(cntry, 'Kosovo')) %>%
+  arrange(-weight) %>%
+  left_join(df.nuts %>% transmute(region = `NUTS-Code`, region_name = Description), by=c('region')) %>%
+  mutate(region_name = coalesce(region_name, '')) %>%  {
+    transmute(., hms = pred.hms,
+              stf = pred.stf,
+              rlg = pred.rlg,
+              country = toupper(ifelse(str_detect(cntry, '^United Kingdom'), 'United Kingdom', cntry)),
+              region,
+              region_name = toupper(str_replace(region_name, ' *\\(.*$', '')),
+              weight) %>%
+    write_tsv('~/tmp/data.tsv') # Write data here!
+    .
+  } %>%
+ {
+    ggplot(., aes(pred.stf, pred.hms, size=weight)) +
+      geom_point(shape=21, fill="#cccccc", color='white') +
+      geom_point(data = rename(., country = cntry), shape=21, fill='#222222', color='white') +
+      scale_y_continuous(labels=scales::percent) +
+      scale_size_area(max_size=12) +
+      facet_wrap(~ country) +
+      labs(x="", y="") +
+      theme_henrik(grid='XY') +
+      theme(legend.position='none',
+            panel.border = element_rect(fill=NA))
+  }
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+df.nuts <- read_csv('../data/ess/NUTS_2013L_20170912_205724.csv')
+```
+
+
+```{r}
+df.hist <- tibble(filename = list.files('../data/ess', 'ESS.*.sav', full.names=TRUE)) %>%
+  mutate(data = map(filename, ~read_spss(.) %>% select(essround, name, pspwght, pweight, cntry, freehms))) %>%
+  unnest(data)
+```
+
+
+```{r}
+df.hist %>%
+  filter(!is.na(freehms)) %>%
+  group_by(cntry) %>%
+  filter(n_distinct(filename) == 7) %>%
+  group_by(essround) %>%
+  summarize(p = sum((freehms <= 2) * pspwght * pweight) / sum(pspwght * pweight),
+            n_distinct(cntry)) 
+
+%>%
+  ggplot
+```
+
+
+
+
+
+```{r}
+df.kalle <- modelr::data_grid(df.tmp, nesting(cntry, region)) %>%
+  group_by(nest = 1) %>%
+  nest() %>%
+  mutate(pred = map(data, ~predict(lmer.out, newdata=., type='response'))) %>%
+  unnest(data, pred) %>%
+  rename(pred.hms = pred) %>%
+  inner_join(
+    modelr::data_grid(df.tmp, nesting(cntry, region)) %>%
+      group_by(nest = 1) %>%
+      nest() %>%
+      mutate(pred = map(data, ~predict(lmer.out.stf, newdata=., type='response'))) %>%
+      unnest(data, pred) %>%
+      rename(pred.stf = pred),
+    by=c('cntry', 'region')
+  ) %>%
+  inner_join(
+    modelr::data_grid(df.tmp, nesting(cntry, region)) %>%
+      group_by(nest = 1) %>%
+      nest() %>%
+      mutate(pred = map(data, ~predict(lmer.out.rlg, newdata=., type='response'))) %>%
+      unnest(data, pred) %>%
+      rename(pred.rlg = pred),
+    by=c('cntry', 'region')
+  ) %>%
+  inner_join(df.tmp %>% group_by(cntry, region) %>% summarize(p.stf = sum(stflife * weight)/sum(weight), p.hms = sum((freehms <= 2)*weight)/sum(weight), weight = sum(weight)/n_distinct(name))) %>%
+  mutate(cntry = countrycode::countrycode(cntry, origin='iso2c', destination='country.name'),
+         cntry = coalesce(cntry, 'Kosovo'))
+
+
+summary(lm(p.hms ~ pred.rlg, weight=weight, data=df.kalle, family='binomial'))
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
