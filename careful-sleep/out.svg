@@ -325,8 +325,8 @@
        y="607.42322"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Lato;-inkscape-font-specification:Lato;fill:#4d4d4d;fill-opacity:1">5th percentile</tspan></text>
   <path
-     style="fill:none;stroke:#000000;stroke-width:0.80000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:2.40000004, 2.40000004;stroke-dashoffset:0;stroke-opacity:1"
-     d="m 187.36037,493.17679 h 43.77966 v 21.88983"
+     style="fill:none;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:2.4,2.4;stroke-dashoffset:0;stroke-opacity:1"
+     d="m 231.14003,515.06662 v -21.88983 h -43.77966 l -66.69935,0"
      id="path4663"
      inkscape:connector-curvature="0" />
   <rect
@@ -531,4 +531,10 @@
        x="406.09885"
        y="268.10748"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Lato;-inkscape-font-specification:Lato;fill:#930000;fill-opacity:1">ATUS</tspan></text>
+  <circle
+     r="3.9054241"
+     cy="492.90985"
+     cx="120.42392"
+     id="circle4908"
+     style="fill:#111111;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:3, 3;stroke-dashoffset:0;stroke-opacity:1" />
 </svg>
