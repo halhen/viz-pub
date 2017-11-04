@@ -47,13 +47,13 @@ d3.csv("data.csv", function(error, data) {
   scale_linewidth.domain([0, d3.max(data, function(d) { return d.n; })]);
 
 
-  svg.selectAll("dot")
+  svg.append("g").selectAll("dot")
     .data(d3.map(data, function(d) { return d.start; }).keys())
     .enter()
     .append("circle")
       .attr("r", 0.07)
-      .attr("cx", function(d) { return xpos(d); })
-      .attr("cy", function(d) { return ypos(d); })
+      .attr("cx", function(d) { return xpos(d, 1.05); })
+      .attr("cy", function(d) { return ypos(d, 1.05); })
       .attr("fill", "#fff")
       .on("mouseover", function(d) {
         svg.selectAll("path")
@@ -61,14 +61,26 @@ d3.csv("data.csv", function(error, data) {
       })
       .on("mouseout", function() {
         svg.selectAll("path")
-          .attr("stroke-opacity", 1);
+          .attr("stroke-opacity", function(dpath) { return dpath.n > 0.01 ? 1 : 0; });
       });
+
+  svg.append("g").selectAll("text")
+    .data(d3.map(data, function(d) { return d.start; }).keys())
+    .enter()
+    .filter(function(d) { return Math.round(d) == d; })
+    .append("text")
+      .text(function(d) { return d; })
+      .attr("x", function(d) { return xpos(d, 1.05); })
+      .attr("y", function(d) { return ypos(d, 1.05); })
+      .attr("text-anchor", "middle")
+      .style("pointer-events", "none")
+      .attr("font-size", 0.05);
   
 
   svg.selectAll("path")
     .data(data)
     .enter()
-    .filter(function(d) {return d.n > 0.03; })
+    .filter(function(d) {return d.n > 0.01; })
     .append("path")
       .attr("d", function(d) { return "M " + xpos(d.start) + " "  + ypos(d.start) + " " +
                                       "Q 0 0 " + xpos(d.end) + " " + ypos(d.end); })
