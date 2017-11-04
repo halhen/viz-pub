@@ -13,11 +13,11 @@ path, line {
 <script>
 
 function xpos(time, radius = 1) {
-  return radius * Math.sin(2 * Math.PI * (time % 24)/24);
+  return radius * Math.sin(2 * Math.PI * time/24);
 }
 
 function ypos(time, radius = 1) {
-  return -radius * Math.cos(2 * Math.PI * (time % 24)/24); 
+  return -radius * Math.cos(2 * Math.PI * time/24); 
 }
 
 var scale_color = d3.scaleLinear()
@@ -68,17 +68,18 @@ d3.csv("data.csv", function(error, indata) {
   scale_timewidth.domain([0, d3.max(data, function(d) { return d.n; })]);
 
 
-  svg.append("g").selectAll("dot")
-    .data(d3.map(data, function(d) { return d.start; }).keys())
+  svg.append("g").selectAll("path")
+    .data([...Array(48).keys()])
     .enter()
-    .append("circle")
-      .attr("r", 0.07)
-      .attr("cx", function(d) { return xpos(d, 1.07); })
-      .attr("cy", function(d) { return ypos(d, 1.07); })
+    .append("path")
+      .attr("d", function(d) { console.log(d); return "M 0 0" +
+                                      " L " + xpos(d/2 + 0.25, 1.18) + " " + ypos(d/2 + 0.25, 1.18) +
+                                      " L " + xpos(d/2 - 0.25, 1.18) + " " + ypos(d/2 - 0.25, 1.18) +
+                                      " Z"; })
       .attr("fill", "#fff")
       .on("mouseover", function(d) {
         svg.selectAll(".timeline")
-          .attr("opacity", function(dpath) { return dpath.start == d || dpath.end == d ? 1 : 0; });
+          .attr("opacity", function(dpath) { return dpath.start == d/2 || dpath.end == d/2 ? 1 : 0; });
       })
       .on("mouseout", function() {
         svg.selectAll(".timeline")
@@ -86,7 +87,7 @@ d3.csv("data.csv", function(error, indata) {
       });
 
   svg.append("g").selectAll("text")
-    .data(d3.map(data, function(d) { return d.start; }).keys())
+    .data([...Array(24).keys()])
     .enter()
     .filter(function(d) { return Math.round(d) == d; })
     .append("text")
@@ -99,7 +100,7 @@ d3.csv("data.csv", function(error, indata) {
       .attr("font-size", 0.05);
   
 
-  svg.selectAll("path")
+  svg.append("g").selectAll("path")
     .data(data)
     .enter()
     .filter(function(d) {return d.n > 0.01; })
