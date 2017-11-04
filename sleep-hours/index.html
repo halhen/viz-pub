@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<style>
+
+path, line {
+  stroke: #000;
+  stroke-width: 0.01;
+}
+
+</style>
+<body>
+<svg id="mainimg" width=600 height=600></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+d3.csv("data.csv", function(error, data) {
+  if (error) throw error;
+
+  data.forEach(function(d, i) {
+    d.start = +d.start;
+    d.end = +d.end;
+    d.n = +d.n;
+  });
+
+  console.log(data);
+
+  svg = d3.select("#mainimg")
+      .attr("viewBox", "-1, -1, 2, 2")
+    .append("g");
+
+  svg.selectAll("line")
+    .data(data)
+    .enter()
+    .filter(function(d) {return d.n > 0.01})
+    .append("line")
+      .attr("x1", function(d) { return Math.sin(2 * Math.PI * d.start/24); })
+      .attr("y1", function(d) { return -Math.cos(2 * Math.PI * d.start/24); })
+      .attr("x2", function(d) { return Math.sin(2 * Math.PI * d.end/24); })
+      .attr("y2", function(d) { return -Math.cos(2 * Math.PI * d.end/24); })
+      .style("stroke-width", function(d) {return 0.01 * d.n});
+
+
+
+  
+});
+
+
+</script>
