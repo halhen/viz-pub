@@ -21,11 +21,14 @@ function ypos(time, radius = 1) {
 }
 
 var scale_color = d3.scaleLinear()
-  .range([0.4, 1]);
+  .range([0.2, 1]);
 
 var scale_linewidth = d3.scaleLinear()
   .range([0.003, 0.01]);
 
+var svg = d3.select("#mainimg")
+    .attr("viewBox", "-1.3, -1.3, 2.6, 2.6")
+    .append("g");
 
 
 
@@ -44,20 +47,34 @@ d3.csv("data.csv", function(error, data) {
   scale_linewidth.domain([0, d3.max(data, function(d) { return d.n; })]);
 
 
-  var svg = d3.select("#mainimg")
-      .attr("viewBox", "-1, -1, 2, 2")
-    .append("g");
+  svg.selectAll("dot")
+    .data(d3.map(data, function(d) { return d.start; }).keys())
+    .enter()
+    .append("circle")
+      .attr("r", 0.07)
+      .attr("cx", function(d) { return xpos(d); })
+      .attr("cy", function(d) { return ypos(d); })
+      .attr("fill", "#fff")
+      .on("mouseover", function(d) {
+        svg.selectAll("path")
+          .attr("stroke-opacity", function(dpath) { return dpath.start == d || dpath.end == d ? 1 : 0; });
+      })
+      .on("mouseout", function() {
+        svg.selectAll("path")
+          .attr("stroke-opacity", 1);
+      });
+  
 
   svg.selectAll("path")
     .data(data)
     .enter()
-    .filter(function(d) {return d.n > 0.01; })
+    .filter(function(d) {return d.n > 0.03; })
     .append("path")
       .attr("d", function(d) { return "M " + xpos(d.start) + " "  + ypos(d.start) + " " +
-                                      "Q " + xpos(d.start + ((24 + d.end - d.start) % 24) / 2, 0.2 * Math.abs((24 + d.end - d.start) % 24 - 12)/12) + " " +
-                                             ypos(d.start + ((24 + d.end - d.start) % 24) / 2, 0.2 * Math.abs((24 + d.end - d.start) % 24 - 12)/12) + " " + xpos(d.end) + " " + ypos(d.end); })
+                                      "Q 0 0 " + xpos(d.end) + " " + ypos(d.end); })
       .attr("stroke", function(d) { return d3.interpolateYlGnBu(scale_color(d.n)); } )
-      .attr("stroke-width", function(d) {return scale_linewidth(d.n); });
+      .attr("stroke-width", function(d) {return scale_linewidth(d.n); })
+      .style("pointer-events", "none");
 
 
 
