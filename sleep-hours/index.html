@@ -12,19 +12,19 @@ path, line {
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script>
 
-function xpos(time) {
-  return Math.sin(2 * Math.PI * time/24);
+function xpos(time, radius = 1) {
+  return radius * Math.sin(2 * Math.PI * (time % 24)/24);
 }
 
-function ypos(time) {
-  return -Math.cos(2 * Math.PI * time/24); 
+function ypos(time, radius = 1) {
+  return -radius * Math.cos(2 * Math.PI * (time % 24)/24); 
 }
 
 var scale_color = d3.scaleLinear()
-  .range([0.0, 1]);
+  .range([0.4, 1]);
 
 var scale_linewidth = d3.scaleLinear()
-  .range([0, 0.01]);
+  .range([0.003, 0.01]);
 
 
 
@@ -44,7 +44,7 @@ d3.csv("data.csv", function(error, data) {
   scale_linewidth.domain([0, d3.max(data, function(d) { return d.n; })]);
 
 
-  svg = d3.select("#mainimg")
+  var svg = d3.select("#mainimg")
       .attr("viewBox", "-1, -1, 2, 2")
     .append("g");
 
@@ -54,7 +54,8 @@ d3.csv("data.csv", function(error, data) {
     .filter(function(d) {return d.n > 0.01; })
     .append("path")
       .attr("d", function(d) { return "M " + xpos(d.start) + " "  + ypos(d.start) + " " +
-                                      "Q 0 0 " + xpos(d.end) + " " + ypos(d.end); })
+                                      "Q " + xpos(d.start + ((24 + d.end - d.start) % 24) / 2, 0.2 * Math.abs((24 + d.end - d.start) % 24 - 12)/12) + " " +
+                                             ypos(d.start + ((24 + d.end - d.start) % 24) / 2, 0.2 * Math.abs((24 + d.end - d.start) % 24 - 12)/12) + " " + xpos(d.end) + " " + ypos(d.end); })
       .attr("stroke", function(d) { return d3.interpolateYlGnBu(scale_color(d.n)); } )
       .attr("stroke-width", function(d) {return scale_linewidth(d.n); });
 
