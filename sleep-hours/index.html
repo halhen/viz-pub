@@ -1,11 +1,16 @@
 <!DOCTYPE html>
+<head>
 <style>
 
-path, line {
-  
+text {
+  font-family: Lato;
 }
 
 </style>
+
+<link href="//fonts.googleapis.com/css?family=Lato|Playfair+Display" rel="stylesheet">
+
+</head>
 <body>
 <svg id="mainimg" width=600 height=600></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -27,7 +32,7 @@ var scale_timewidth = d3.scaleLinear()
   .range([0.000, 0.2]);
 
 var svg = d3.select("#mainimg")
-    .attr("viewBox", "-1.3, -1.3, 2.6, 2.6")
+    .attr("viewBox", "-1.2, -1.2, 2.4, 2.4")
     .append("g");
 
 
@@ -125,3 +130,5 @@ d3.csv("data.csv", function(error, indata) {
 
 
 </script>
+</body>
+</html>
