@@ -32,18 +32,37 @@ var svg = d3.select("#mainimg")
 
 
 
-d3.csv("data.csv", function(error, data) {
+d3.csv("data.csv", function(error, indata) {
   if (error) throw error;
 
-  data.forEach(function(d, i) {
-    d.start = +d.start;
-    d.end = +d.end;
-    d.interval = d.end - d.start + (d.end > d.start ? 24 : 0);
+  var data = [];
+  d3.nest()
+    .key(function(d) { return d.start; })
+    .key(function(d) { return d.end; })
+    .rollup(function(d) {
+      return d3.sum(d, function(g) { return true ? +g.n : 0; })
+    })
+    .entries(indata)
+    .forEach(function(d1) {
+      d1.values.forEach(function(d2) {
+        data.push({
+          start: +d1.key,
+          end: +d2.key,
+          n: d2.value
+        });
+      });
+    });
+
+  data.forEach(function(d) {
+    d.interval = d.end - d.start + (d.end > d.start ? 0 : 24);
     d.midpoint = (d.start + d.interval / 2) % 24;
-    d.n = +d.n;
+    
   });
 
-  console.log(data);
+  data.sort(function(x, y) {
+    return d3.ascending(x.n, y.n);
+  })
+
 
   scale_color.domain([0, d3.max(data, function(d) { return d.n; })]);
   scale_timewidth.domain([0, d3.max(data, function(d) { return d.n; })]);
@@ -86,15 +105,15 @@ d3.csv("data.csv", function(error, data) {
     .filter(function(d) {return d.n > 0.01; })
     .append("path")
       .attr("d", function(d) { return "M " + xpos(d.start - scale_timewidth(d.n)/2) + " "  + ypos(d.start - scale_timewidth(d.n)/2) + " " +
-                                      "Q " + xpos(d.midpoint, scale_timewidth(d.n)/4) + " " + ypos(d.midpoint, scale_timewidth(d.n)/4) + " " +
+                                      "Q " + xpos(d.midpoint, 0) + " " + ypos(d.midpoint, 0) + " " +
                                              xpos(d.end + scale_timewidth(d.n)/2) + " " + ypos(d.end + scale_timewidth(d.n)/2) + " " +
                                       "L " + xpos(d.end - scale_timewidth(d.n)/2) + " " + ypos(d.end - scale_timewidth(d.n)/2) + " " +
-                                      "Q " + xpos(d.midpoint, 0) + " " + ypos(d.midpoint, 0) + " " +
+                                      "Q " + xpos(d.midpoint, scale_timewidth(d.n)/4) + " " + ypos(d.midpoint, scale_timewidth(d.n)/4) + " " +
                                              xpos(d.start + scale_timewidth(d.n)/2) + " "  + ypos(d.start + scale_timewidth(d.n)/2) +
                                       "Z"; })
       .attr("stroke", "#fff")
       .attr("fill", function(d) { return d3.interpolateYlGnBu(scale_color(d.n)); } )
-      .attr("stroke-width", 0.0013)
+      .attr("stroke-width", 0.0018)
       .style("pointer-events", "none");
 
 
