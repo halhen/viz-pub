@@ -20,6 +20,14 @@ function ypos(time) {
   return -Math.cos(2 * Math.PI * time/24); 
 }
 
+var scale_color = d3.scaleLinear()
+  .range([0.0, 1]);
+
+var scale_linewidth = d3.scaleLinear()
+  .range([0, 0.01]);
+
+
+
 
 d3.csv("data.csv", function(error, data) {
   if (error) throw error;
@@ -32,6 +40,9 @@ d3.csv("data.csv", function(error, data) {
 
   console.log(data);
 
+  scale_color.domain([0, d3.max(data, function(d) { return d.n; })]);
+  scale_linewidth.domain([0, d3.max(data, function(d) { return d.n; })]);
+
 
   svg = d3.select("#mainimg")
       .attr("viewBox", "-1, -1, 2, 2")
@@ -40,12 +51,12 @@ d3.csv("data.csv", function(error, data) {
   svg.selectAll("path")
     .data(data)
     .enter()
-    .filter(function(d) {return d.n > 0.1; })
+    .filter(function(d) {return d.n > 0.01; })
     .append("path")
       .attr("d", function(d) { return "M " + xpos(d.start) + " "  + ypos(d.start) + " " +
                                       "Q 0 0 " + xpos(d.end) + " " + ypos(d.end); })
-      .attr("stroke", function(d) { return d3.interpolateYlGnBu(d.n); } )
-      .attr("stroke-width", function(d) {return 0.01 * d.n});
+      .attr("stroke", function(d) { return d3.interpolateYlGnBu(scale_color(d.n)); } )
+      .attr("stroke-width", function(d) {return scale_linewidth(d.n); });
 
 
 
