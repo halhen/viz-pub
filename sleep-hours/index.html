@@ -21,10 +21,10 @@ function ypos(time, radius = 1) {
 }
 
 var scale_color = d3.scaleLinear()
-  .range([0.2, 1]);
+  .range([0.4, 1]);
 
 var scale_linewidth = d3.scaleLinear()
-  .range([0.003, 0.01]);
+  .range([0.000, 0.04]);
 
 var svg = d3.select("#mainimg")
     .attr("viewBox", "-1.3, -1.3, 2.6, 2.6")
@@ -73,6 +73,7 @@ d3.csv("data.csv", function(error, data) {
       .attr("x", function(d) { return xpos(d, 1.05); })
       .attr("y", function(d) { return ypos(d, 1.05); })
       .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
       .style("pointer-events", "none")
       .attr("font-size", 0.05);
   
