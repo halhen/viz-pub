@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <head>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
 <style>
+
+body {
+  font: 1em 'Lato', sans-serif;
+}
 
 text {
   font-family: Lato;
@@ -8,11 +16,29 @@ text {
 
 </style>
 
-<link href="//fonts.googleapis.com/css?family=Lato|Playfair+Display" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Lato|Playfair+Display" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
 
 </head>
 <body>
-<svg id="mainimg" width=600 height=600></svg>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>Cycle of sleep</h1>
+      <p>Testing testing</p>
+      <svg id="mainimg" width=600 height=600></svg>
+      <p>Testing testing</p>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script>
@@ -47,7 +73,7 @@ d3.csv("data.csv", function(error, indata) {
     .key(function(d) { return d.start; })
     .key(function(d) { return d.end; })
     .rollup(function(d) {
-      return d3.sum(d, function(g) { return g.school == 2 && g.wday < 6 ? +g.n : 0; })
+      return d3.sum(d, function(g) { return true ? +g.n : 0; })
     })
     .entries(indata)
     .forEach(function(d1) {
