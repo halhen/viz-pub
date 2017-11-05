@@ -1,0 +1,63 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+library(lubridate)
+
+# Data fetched from https://www.kaggle.com/bls/american-time-use-survey
+
+df.act <- read_csv('../data/atus/atusact.csv')
+df.sum <- read_csv('../data/atus/atussum.csv')
+df.resp <- read_csv('../data/atus/atusresp.csv')
+```
+
+
+
+
+```{r}
+df.act %>%
+  filter(trcodep == 10101) %>%
+  filter(tuactivity_n > 1) %>% # Don't count sleep coming in from yesterday
+  transmute(tucaseid,
+            start = as.numeric(tustarttim) / 3600,
+            end = (start + tuactdur/60) %% 24) %>%
+  inner_join(df.sum %>%
+               transmute(tucaseid, teage)) %>%
+  inner_join(df.resp %>%
+               transmute(tucaseid, tudiarydate, tudiaryday, tufnwgtp, teschlvl, trmjind1, telfs)) %>%
+  mutate(start = (round(start * 2) / 2) %% 24,
+         end = (round(end * 2) / 2) %% 24) %>%
+  group_by(age = round(teage/10) * 10,
+           wday = tudiaryday,
+           occupation = case_when(teschlvl == 1 ~ 'Student, High school',
+                                  teschlvl == 2 ~ 'Student, College',
+                                  trmjind1 == 1 ~ 'Working, Agriculture, forestry, fishing and hunting',
+                                  trmjind1 == 2 ~ 'Working, Other',
+                                  trmjind1 == 3 ~ 'Working, Construction',
+                                  trmjind1 == 4 ~ 'Working, Manufacturing',
+                                  trmjind1 == 5 ~ 'Working, Wholesale and retail trade',
+                                  trmjind1 == 6 ~ 'Working, Transporation and utilities',
+                                  trmjind1 == 7 ~ 'Working, Information',
+                                  trmjind1 == 8 ~ 'Working, Financial activities',
+                                  trmjind1 == 9 ~ 'Working, Professional and business services',
+                                  trmjind1 == 10 ~ 'Working, Education and health servies',
+                                  trmjind1 == 11 ~ 'Working, Leisure and hospitality',
+                                  trmjind1 == 13 ~ 'Working, Public administration',
+                                  trmjind1 == 12 ~ 'Working, Other',
+                                  telfs %in% c(3, 4) ~ 'Unemployed',
+                                  telfs == 5 ~ 'Retired',
+                                  TRUE ~ 'Not working'),
+           start, end) %>%
+  summarize(n = sum(tufnwgtp),
+            count = n()) %>%
+  ungroup() %>%
+  mutate(n = 10000 * n/sum(n)) %>% #arbitrary constant to keep numbers about-right-sized
+  write_csv('data.csv')
+```
+
+
+
