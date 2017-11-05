@@ -25,12 +25,13 @@ function ypos(time, radius = 1) {
   return -radius * Math.cos(2 * Math.PI * time/24); 
 }
 
-var scale_color = d3.scaleQuantize()
-  .range([0.3, 0.6, 0.8, 1])
-  .nice();
+var scale_color = d3.scaleLinear()
+  .range([0.3, 1])
+  .domain([0, 3]); // percent
 
 var scale_timewidth = d3.scaleLinear()
-  .range([0.000, 0.2]);
+  .range([0.000, 0.2])
+  .domain([0, 3]); // percent
 
 var svg = d3.select("#mainimg")
     .attr("viewBox", "-1.2, -1.2, 2.4, 2.4")
@@ -46,7 +47,7 @@ d3.csv("data.csv", function(error, indata) {
     .key(function(d) { return d.start; })
     .key(function(d) { return d.end; })
     .rollup(function(d) {
-      return d3.sum(d, function(g) { return g.group == 1 ? +g.n : 0; })
+      return d3.sum(d, function(g) { return g.school == 2 && g.wday < 6 ? +g.n : 0; })
     })
     .entries(indata)
     .forEach(function(d1) {
@@ -59,9 +60,11 @@ d3.csv("data.csv", function(error, indata) {
       });
     });
 
+  var total = d3.sum(data, function(d2) { return d2.n; }) / 100;
   data.forEach(function(d) {
     d.interval = d.end - d.start + (d.end > d.start ? 0 : 24);
     d.midpoint = (d.start + d.interval / 2) % 24;
+    d.n = d.n / total;
     
   });
 
@@ -70,15 +73,12 @@ d3.csv("data.csv", function(error, indata) {
   })
 
 
-  scale_color.domain([0, d3.max(data, function(d) { return d.n; })]);
-  scale_timewidth.domain([0, d3.max(data, function(d) { return d.n; })]);
-
-
+  
   svg.append("g").selectAll("path")
     .data([...Array(48).keys()])
     .enter()
     .append("path")
-      .attr("d", function(d) { console.log(d); return "M 0 0" +
+      .attr("d", function(d) { return "M 0 0" +
                                       " L " + xpos(d/2 + 0.25, 1.18) + " " + ypos(d/2 + 0.25, 1.18) +
                                       " L " + xpos(d/2 - 0.25, 1.18) + " " + ypos(d/2 - 0.25, 1.18) +
                                       " Z"; })
@@ -125,17 +125,6 @@ d3.csv("data.csv", function(error, indata) {
       .style("pointer-events", "none");
 
 
-  
-
-  var legend = d3.legendColor()
-    .useClass(true)
-    .title("Title")
-    .scale(scale_color);
-
-  svg.append("g")
-    .attr("class", "legendLinear")
-    .attr("transform", "translate(20,20)")
-    .call(legend);
 
 
 
