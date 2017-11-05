@@ -47,6 +47,14 @@ select:focus {
     outline: none;
 }
 
+button {
+  background: "#ff0";
+  padding: 5px 8px;
+  margin: 5px;
+  font-size: 0.8em;
+  border: 1px solid black;
+}
+
 </style>
 
 </head>
@@ -55,13 +63,27 @@ select:focus {
   <div class="row">
     <div class="col">
       <h1>Cycle of sleep</h1>
-      <p>Testing testing</p>
+      
+      <p>Bedtime at ten, rise and shine at six. This is how Americans get through most nights.</p>
+
+      <p>Here is a small data visualization on when people go to bed and when they get out of it. Times are aggregated by half-hour, and each line is colored and sized according to how large percentage of the population that sleeps this way. Hover over times to focus on a particular time.</p>
+
+      <p>A few cool things to notice:
+        <ul>
+        <li>Napping seems to be a thing to look forward to; <a href="#" onclick="setfilter({age: '80'}); return false;">the older we get, the more we nap</a>.</li>
+        <li><a href="#" onclick="setfilter({occupation: 'Student, College'}); return false;">College students</a> sleep in more, while for example <a href="#" onclick="setfilter({occupation: 'Working, Manufacturing'}); return false;">getting to the factory</a> requires early rising.</li>
+        <li><a href="#" onclick="setfilter({wday: '7'}); return false;">Saturday to Sundays</a> are for sleeping in.</li>
+        </ul>
+      </p>
+
+
+
+
     </div>
   </div>
 
   <div class="row">
     <div class="col">
-
       <select id="mainimg-age" onchange="redraw(); return true;">
         <option value="">All ages</option>
         <option value="20">15-24 y/o</option>
@@ -86,8 +108,11 @@ select:focus {
       <select id="mainimg-occupation" onchange="redraw(); return true;">
         <option value="">All occupations</option>
       </select>
+
+      <button onclick="setfilter({}); return false;">RESET FILTER</a>
     </div>
   </div>
+
   <div class="row justify-content-center">
     <div class="col-lg-8 col-md-10 col-sm-12">
       <svg id="mainimg" width="100%">
@@ -95,11 +120,30 @@ select:focus {
       </svg>
     </div>
   </div>
+
   <div class="row">
     <div class="col">
-      <p>Testing testing</p>
+      <p>As a data visualization, it looks kind of cool. It visualizes interesting data in a way that invites exploration. Since we all share similar expectations of how sleep works, people also seem to figure out how to read it quite fast.</p>
+
+      <p>There are of course a few downsides to it.</p>
+
+      <ul>
+      <li>It's not the best visualization to compare groups. Look for example at how the difference between <a href="#" onclick="setfilter({occupation: 'Unemployed'}); return false">unemployed people</a> and say <a href="#" onclick="setfilter({occupation: 'Working, Manufacturing'}); return false">those working in manufacturing</a>. I see that there is a difference between the two groups but it's hard to get an intuition for how large it is.</li>
+      
+      <li>The clock is circular, and we go to bed on one weekday and wake up on the next. It's not obvious what "Sunday" means for the line between 22:00 - 06:00. In the chart, I use the time when people go to bed as a point of reference; <a href="#" onclick="setfilter({wday: '1'}); return false;">Sunday</a> means getting to bet on Sunday evening and getting up on Monday morning. The day breaks at 04:00. If you'd like to see what a weekend looks like, <a href="#" onclick="setfilter({wday: '7'}); return false;")>Saturday</a> is the way to go.</li>
+
+      <li>Also, on the raw-ish data I've used, I it's quite easy to break the viz by asking it to dig too deep. For example <a href="#" onclick="setfilter({age: '50', occupation: 'Student, High school'}); return false;">50-year-old high school students</a> seem to exist (bad data?). A solution to this would be to clean the data through some modelling, but this was not the point of the exercise, so...</li>
+      </ul>
     </div>
   </div>
+
+
+  <div class="row"><div class="col footer">
+    <hr style="border-top: 4px double #aaa;"/>
+    <p>I used data the <a href="https://www.bls.gov/tus/">American Time Use Survey</a> between 2003-2015. Respondents fill out detailed diaries on how they spend a day, including when they go to and get out of bed. Data and the chart was aggregated and prototyped in R and finalized using D3.js.</p>
+
+    <p>I'm on Twitter as <a href="https://twitter.com/hnrklndbrg">@hnrklndbrg</a> if you want to comment or get in touch!</p>
+  </div></div>  
 </div>
 
 
@@ -122,6 +166,13 @@ function xpos(time, radius = 1) {
 
 function ypos(time, radius = 1) {
   return -radius * Math.cos(2 * Math.PI * time/24); 
+}
+
+function setfilter(settings = {}) {
+  document.getElementById('mainimg-age').value = settings.age || '';
+  document.getElementById('mainimg-wday').value = settings.wday || '';
+  document.getElementById('mainimg-occupation').value = settings.occupation || '';
+  redraw();
 }
 
 var scale_color = d3.scaleSequential(function(t) {
