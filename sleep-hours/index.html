@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<head>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="https://fonts.googleapis.com/css?family=Lato|Playfair+Display" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+
+<style>
+
+body {
+  font: 1em 'Lato', sans-serif;
+}
+
+text {
+  font-family: Lato;
+}
+
+.footer {
+  font-size: 0.8em;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 0.5em;
+}
+
+
+#legend text {
+  font-size: 0.7em;
+  fill: #333;
+}
+
+
+select {
+    padding: 5px 8px;
+    margin: 5px;
+    font-size: 0.8em;
+    border: 1px solid black;
+    background: transparent;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
+select:focus {
+    outline: none;
+}
+
+button {
+  background: "#ff0";
+  padding: 5px 8px;
+  margin: 5px;
+  font-size: 0.8em;
+  border: 1px solid black;
+}
+
+</style>
+
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>Cycle of sleep</h1>
+      
+      <p>Bedtime at ten, rise and shine at six. This is how Americans get through most nights.</p>
+
+      <p>Here is a small data visualization on when people go to bed and when they get out of it. Times are aggregated by half-hour, and each line is colored and sized according to how large percentage of the population that sleeps this way. Hover over times to focus on a particular time.</p>
+
+      <p>A few cool things to notice:
+        <ul>
+        <li>Napping seems to be a thing to look forward to; <a href="#" onclick="setfilter({age: '80'}); return false;">the older we get, the more we nap</a>.</li>
+        <li><a href="#" onclick="setfilter({occupation: 'Student, College'}); return false;">College students</a> sleep in more, while for example <a href="#" onclick="setfilter({occupation: 'Working, Manufacturing'}); return false;">getting to the factory</a> requires early rising.</li>
+        <li><a href="#" onclick="setfilter({wday: '7'}); return false;">Saturday to Sundays</a> are for sleeping in.</li>
+        </ul>
+      </p>
+
+
+
+
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <select id="mainimg-age" onchange="redraw(); return true;">
+        <option value="">All ages</option>
+        <option value="20">15-24 y/o</option>
+        <option value="30">25-34 y/o</option>
+        <option value="40">35-44 y/o</option>
+        <option value="50">45-54 y/o</option>
+        <option value="60">55-64 y/o</option>
+        <option value="70">65-74 y/o</option>
+        <option value="80">75+ y/o</option>
+      </select>
+      <select id="mainimg-wday" onchange="redraw(); return true;">
+        <option value="">All days</option>
+        <option value="1">Sunday</option>
+        <option value="2">Monday</option>
+        <option value="3">Tuesday</option>
+        <option value="4">Wednesday</option>
+        <option value="5">Thursday</option>
+        <option value="6">Friday</option>
+        <option value="7">Saturday</option>  
+      </select>
+
+      <select id="mainimg-occupation" onchange="redraw(); return true;">
+        <option value="">All occupations</option>
+      </select>
+
+      <button onclick="setfilter({}); return false;">RESET FILTER</a>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-sm-12">
+      <svg id="mainimg" width="100%">
+        <g id="legend" transform="translate(-1.12 0.97) scale(0.004)"></g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <p>As a data visualization, it looks kind of cool. It visualizes interesting data in a way that invites exploration. Since we all share similar expectations of how sleep works, people also seem to figure out how to read it quite fast.</p>
+
+      <p>There are of course a few downsides to it.</p>
+
+      <ul>
+      <li>It's not the best visualization to compare groups. Look for example at how the difference between <a href="#" onclick="setfilter({occupation: 'Unemployed'}); return false">unemployed people</a> and say <a href="#" onclick="setfilter({occupation: 'Working, Manufacturing'}); return false">those working in manufacturing</a>. I see that there is a difference between the two groups but it's hard to get an intuition for how large it is.</li>
+      
+      <li>The clock is circular, and we go to bed on one weekday and wake up on the next. It's not obvious what "Sunday" means for the line between 22:00 - 06:00. In the chart, I use the time when people go to bed as a point of reference; <a href="#" onclick="setfilter({wday: '1'}); return false;">Sunday</a> means getting to bet on Sunday evening and getting up on Monday morning. The day breaks at 04:00. If you'd like to see what a weekend looks like, <a href="#" onclick="setfilter({wday: '7'}); return false;")>Saturday</a> is the way to go.</li>
+
+      <li>Also, on the raw-ish data I've used, I it's quite easy to break the viz by asking it to dig too deep. For example <a href="#" onclick="setfilter({age: '50', occupation: 'Student, High school'}); return false;">50-year-old high school students</a> seem to exist (bad data?). A solution to this would be to clean the data through some modelling, but this was not the point of the exercise, so...</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <div class="row"><div class="col footer">
+    <hr style="border-top: 4px double #aaa;"/>
+    <p>I used data the <a href="https://www.bls.gov/tus/">American Time Use Survey</a> between 2003-2015. Respondents fill out detailed diaries on how they spend a day, including when they go to and get out of bed. Data and the chart was aggregated and prototyped in R and finalized using D3.js.</p>
+
+    <p>I'm on Twitter as <a href="https://twitter.com/hnrklndbrg">@hnrklndbrg</a> if you want to comment or get in touch!</p>
+  </div></div>  
+</div>
+
+
+
+
+
+
+
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.min.js"></script>
+<script>
+
+
+
+function xpos(time, radius = 1) {
+  return radius * Math.sin(2 * Math.PI * time/24);
+}
+
+function ypos(time, radius = 1) {
+  return -radius * Math.cos(2 * Math.PI * time/24); 
+}
+
+function setfilter(settings = {}) {
+  document.getElementById('mainimg-age').value = settings.age || '';
+  document.getElementById('mainimg-wday').value = settings.wday || '';
+  document.getElementById('mainimg-occupation').value = settings.occupation || '';
+  redraw();
+}
+
+var scale_color = d3.scaleSequential(function(t) {
+    return d3.interpolateYlGnBu(t * 0.7 + 0.3)
+  })
+  //.range([0.3, 1])
+  //.range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"])
+  .domain([0, 0.03]); // percent
+
+  //d3.interpolateYlGnBu(
+
+var scale_timewidth = d3.scaleLinear()
+  .range([0.000, 0.2])
+  .domain([0, 0.03]); // percent
+
+d3.select("#legend")
+  .call(
+    d3.legendColor()
+      .cells(4)
+      .shapeWidth(20)
+      .orient("horizontal")
+      .labelFormat(d3.format(".0%"))
+      .scale(scale_color)
+  );
+
+
+
+var svg = d3.select("#mainimg")
+    .attr("viewBox", "-1.2, -1.2, 2.4, 2.4")
+    .append("g");
+
+var RAWDATA,
+    TIMELINES;
+
+function aggdata() {
+  var data = [];
+
+  function settings_filter(d) {
+    age = document.getElementById("mainimg-age").value;
+    if (age != "") {
+      if (d.age != age) {
+        return false;
+      }
+    }
+
+    occupation = document.getElementById("mainimg-occupation").value;
+    if (occupation != "") {
+      if (d.occupation != occupation) {
+        return false;
+      }
+    }
+
+    wday = document.getElementById("mainimg-wday").value;
+    if (wday != '') {
+      if (d.wday != wday) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  d3.nest()
+    .key(function(d) { return d.start; })
+    .key(function(d) { return d.end; })
+    .rollup(function(d) {
+      return d3.sum(d, function(g) { return settings_filter(g) ? +g.n : 0; })
+    })
+    .entries(RAWDATA)
+    .forEach(function(d1) {
+      d1.values.forEach(function(d2) {
+        data.push({
+          start: +d1.key,
+          end: +d2.key,
+          n: d2.value
+        });
+      });
+    });
+
+  var total = d3.sum(data, function(d2) { return d2.n; });
+  data.forEach(function(d) {
+    d.interval = d.end - d.start + (d.end > d.start ? 0 : 24);
+    d.midpoint = (d.start + d.interval / 2) % 24;
+    d.n = d.n / total;
+  });
+
+
+  data.sort(function(x, y) {
+    return d3.ascending(x.n, y.n);
+  })
+
+  return data.filter(function(d) {return d.n > 0.0001; });
+}
+
+
+function redraw() {
+
+  data = aggdata();
+
+  TIMELINES.selectAll("path").remove();
+
+  TIMELINES.selectAll("path")
+    .data(data, function(d) { return "" + d.start + "." + d.end; })
+    .enter()
+    .append("path")
+      .classed("timeline", true)
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.0018)
+      .style("pointer-events", "none")
+      .attr("d", function(d) { return "M " + xpos(d.start - scale_timewidth(d.n)/2) + " "  + ypos(d.start - scale_timewidth(d.n)/2) + " " +
+                                      "Q " + xpos(d.midpoint, 0) + " " + ypos(d.midpoint, 0) + " " +
+                                             xpos(d.end + scale_timewidth(d.n)/2) + " " + ypos(d.end + scale_timewidth(d.n)/2) + " " +
+                                      "L " + xpos(d.end - scale_timewidth(d.n)/2) + " " + ypos(d.end - scale_timewidth(d.n)/2) + " " +
+                                      "Q " + xpos(d.midpoint, scale_timewidth(d.n)/3.5) + " " + ypos(d.midpoint, scale_timewidth(d.n)/3.5) + " " +
+                                             xpos(d.start + scale_timewidth(d.n)/2) + " "  + ypos(d.start + scale_timewidth(d.n)/2) +
+                                      "Z"; })
+      .attr("fill", function(d) { return scale_color(d.n); } );
+}
+
+
+d3.csv("data.csv", function(error, indata) {
+  if (error) throw error;
+
+  RAWDATA = indata;
+  var data = aggdata();
+
+  d3.select("#mainimg-occupation")
+    .selectAll("option")
+    .data(d3.map(indata, function(d){return d.occupation;}).keys())
+    .enter()
+    .append("option")
+    .attr("value", function(d) { return d; })
+    .text(function(d) { return d; });
+
+  
+  svg.append("g").selectAll("path")
+    .data([...Array(48).keys()])
+    .enter()
+    .append("path")
+      .attr("d", function(d) { return "M 0 0" +
+                                      " L " + xpos(d/2 + 0.25, 1.18) + " " + ypos(d/2 + 0.25, 1.18) +
+                                      " L " + xpos(d/2 - 0.25, 1.18) + " " + ypos(d/2 - 0.25, 1.18) +
+                                      " Z"; })
+      .attr("fill", "#fff")
+      .on("mouseover", function(d) {
+        svg.selectAll(".timeline")
+          .attr("opacity", function(dpath) { return dpath.start == d/2 || dpath.end == d/2 ? 1 : 0; });
+      })
+      .on("mouseout", function() {
+        svg.selectAll(".timeline")
+          .attr("opacity", 1);
+      });
+
+  svg.append("g").selectAll("text")
+    .data([...Array(24).keys()])
+    .enter()
+    .filter(function(d) { return Math.round(d) == d; })
+    .append("text")
+      .text(function(d) { return d; })
+      .attr("x", function(d) { return xpos(d, 1.07); })
+      .attr("y", function(d) { return ypos(d, 1.07); })
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .style("pointer-events", "none")
+      .attr("font-size", 0.05);
+  
+  TIMELINES = svg.append("g");
+
+  redraw();
+
+
+
+
+
+
+  
+});
+
+
+</script>
+</body>
+</html>
