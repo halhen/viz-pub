@@ -14,6 +14,12 @@ text {
   font-family: Lato;
 }
 
+#legend text {
+  font-size: 0.7em;
+  fill: #333;
+}
+
+
 
 
 select {
@@ -76,7 +82,9 @@ select:focus {
   </div>
   <div class="row">
     <div class="col">
-      <svg id="mainimg" width=600 height=600></svg>
+      <svg id="mainimg" width=600 height=600>
+        <g id="legend" transform="translate(-1.2 1.0) scale(0.004)"></g>
+      </svg>
     </div>
   </div>
   <div class="row">
@@ -95,6 +103,7 @@ select:focus {
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.min.js"></script>
 <script>
 
 
@@ -107,13 +116,30 @@ function ypos(time, radius = 1) {
   return -radius * Math.cos(2 * Math.PI * time/24); 
 }
 
-var scale_color = d3.scaleLinear()
-  .range([0.3, 1])
-  .domain([0, 3]); // percent
+var scale_color = d3.scaleSequential(function(t) {
+    return d3.interpolateYlGnBu(t * 0.7 + 0.3)
+  })
+  //.range([0.3, 1])
+  //.range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"])
+  .domain([0, 0.03]); // percent
+
+  //d3.interpolateYlGnBu(
 
 var scale_timewidth = d3.scaleLinear()
   .range([0.000, 0.2])
-  .domain([0, 3]); // percent
+  .domain([0, 0.03]); // percent
+
+d3.select("#legend")
+  .call(
+    d3.legendColor()
+      .cells(4)
+      .shapeWidth(20)
+      .orient("horizontal")
+      .labelFormat(d3.format(".0%"))
+      .scale(scale_color)
+  );
+
+
 
 var svg = d3.select("#mainimg")
     .attr("viewBox", "-1.2, -1.2, 2.4, 2.4")
@@ -167,8 +193,7 @@ function aggdata() {
       });
     });
 
-console.log(d3.sum(data, function(d2) { return d2.n; }));
-  var total = d3.sum(data, function(d2) { return d2.n; }) / 100;
+  var total = d3.sum(data, function(d2) { return d2.n; });
   data.forEach(function(d) {
     d.interval = d.end - d.start + (d.end > d.start ? 0 : 24);
     d.midpoint = (d.start + d.interval / 2) % 24;
@@ -180,7 +205,7 @@ console.log(d3.sum(data, function(d2) { return d2.n; }));
     return d3.ascending(x.n, y.n);
   })
 
-  return data.filter(function(d) {return d.n > 0.01; });
+  return data.filter(function(d) {return d.n > 0.0001; });
 }
 
 
@@ -205,7 +230,7 @@ function redraw() {
                                       "Q " + xpos(d.midpoint, scale_timewidth(d.n)/3.5) + " " + ypos(d.midpoint, scale_timewidth(d.n)/3.5) + " " +
                                              xpos(d.start + scale_timewidth(d.n)/2) + " "  + ypos(d.start + scale_timewidth(d.n)/2) +
                                       "Z"; })
-      .attr("fill", function(d) { return d3.interpolateYlGnBu(scale_color(d.n)); } );
+      .attr("fill", function(d) { return scale_color(d.n); } );
 }
 
 
