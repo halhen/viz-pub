@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="https://fonts.googleapis.com/css?family=Lato|Playfair+Display" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
 
 <style>
 
@@ -14,16 +16,26 @@ text {
   font-family: Lato;
 }
 
+.footer {
+  font-size: 0.8em;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 0.5em;
+}
+
+
 #legend text {
   font-size: 0.7em;
   fill: #333;
 }
 
 
-
-
 select {
     padding: 5px 8px;
+    margin: 5px;
+    font-size: 0.8em;
     border: 1px solid black;
     background: transparent;
     appearance: none;
@@ -37,8 +49,6 @@ select:focus {
 
 </style>
 
-<link href="https://fonts.googleapis.com/css?family=Lato|Playfair+Display" rel="stylesheet">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container">
@@ -48,24 +58,20 @@ select:focus {
       <p>Testing testing</p>
     </div>
   </div>
+
   <div class="row">
     <div class="col">
 
       <select id="mainimg-age" onchange="redraw(); return true;">
         <option value="">All ages</option>
-        <option value="20">15-24 yo</option>
-        <option value="30">25-34 yo</option>
-        <option value="40">35-44 yo</option>
-        <option value="50">45-54 yo</option>
-        <option value="60">55-64 yo</option>
-        <option value="70">65-74 yo</option>
-        <option value="80">75+ yo</option>
+        <option value="20">15-24 y/o</option>
+        <option value="30">25-34 y/o</option>
+        <option value="40">35-44 y/o</option>
+        <option value="50">45-54 y/o</option>
+        <option value="60">55-64 y/o</option>
+        <option value="70">65-74 y/o</option>
+        <option value="80">75+ y/o</option>
       </select>
-
-      <select id="mainimg-occupation" onchange="redraw(); return true;">
-        <option value="">All occupations</option>
-      </select>
-
       <select id="mainimg-wday" onchange="redraw(); return true;">
         <option value="">All days</option>
         <option value="1">Sunday</option>
@@ -74,15 +80,17 @@ select:focus {
         <option value="4">Wednesday</option>
         <option value="5">Thursday</option>
         <option value="6">Friday</option>
-        <option value="7">Saturday</option>
-        
+        <option value="7">Saturday</option>  
       </select>
 
+      <select id="mainimg-occupation" onchange="redraw(); return true;">
+        <option value="">All occupations</option>
+      </select>
     </div>
   </div>
-  <div class="row">
-    <div class="col">
-      <svg id="mainimg" width=600 height=600>
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-sm-12">
+      <svg id="mainimg" width="100%">
         <g id="legend" transform="translate(-1.2 1.0) scale(0.004)"></g>
       </svg>
     </div>
