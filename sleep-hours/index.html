@@ -14,11 +14,25 @@ text {
   font-family: Lato;
 }
 
+
+
+select {
+    padding: 5px 8px;
+    border: 1px solid black;
+    background: transparent;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
+select:focus {
+    outline: none;
+}
+
 </style>
 
 <link href="https://fonts.googleapis.com/css?family=Lato|Playfair+Display" rel="stylesheet">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
-
 </head>
 <body>
 <div class="container">
@@ -26,7 +40,47 @@ text {
     <div class="col">
       <h1>Cycle of sleep</h1>
       <p>Testing testing</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+
+      <select id="mainimg-age" onchange="redraw(); return true;">
+        <option value="">All ages</option>
+        <option value="20">15-24 yo</option>
+        <option value="30">25-34 yo</option>
+        <option value="40">35-44 yo</option>
+        <option value="50">45-54 yo</option>
+        <option value="60">55-64 yo</option>
+        <option value="70">65-74 yo</option>
+        <option value="80">75+ yo</option>
+      </select>
+
+      <select id="mainimg-occupation" onchange="redraw(); return true;">
+        <option value="">All occupations</option>
+      </select>
+
+      <select id="mainimg-wday" onchange="redraw(); return true;">
+        <option value="">All days</option>
+        <option value="1">Sunday</option>
+        <option value="2">Monday</option>
+        <option value="3">Tuesday</option>
+        <option value="4">Wednesday</option>
+        <option value="5">Thursday</option>
+        <option value="6">Friday</option>
+        <option value="7">Saturday</option>
+        
+      </select>
+
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
       <svg id="mainimg" width=600 height=600></svg>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
       <p>Testing testing</p>
     </div>
   </div>
@@ -42,6 +96,8 @@ text {
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script>
+
+
 
 function xpos(time, radius = 1) {
   return radius * Math.sin(2 * Math.PI * time/24);
@@ -63,19 +119,44 @@ var svg = d3.select("#mainimg")
     .attr("viewBox", "-1.2, -1.2, 2.4, 2.4")
     .append("g");
 
+var RAWDATA,
+    TIMELINES;
 
-
-d3.csv("data.csv", function(error, indata) {
-  if (error) throw error;
-
+function aggdata() {
   var data = [];
+
+  function settings_filter(d) {
+    age = document.getElementById("mainimg-age").value;
+    if (age != "") {
+      if (d.age != age) {
+        return false;
+      }
+    }
+
+    occupation = document.getElementById("mainimg-occupation").value;
+    if (occupation != "") {
+      if (d.occupation != occupation) {
+        return false;
+      }
+    }
+
+    wday = document.getElementById("mainimg-wday").value;
+    if (wday != '') {
+      if (d.wday != wday) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   d3.nest()
     .key(function(d) { return d.start; })
     .key(function(d) { return d.end; })
     .rollup(function(d) {
-      return d3.sum(d, function(g) { return true ? +g.n : 0; })
+      return d3.sum(d, function(g) { return settings_filter(g) ? +g.n : 0; })
     })
-    .entries(indata)
+    .entries(RAWDATA)
     .forEach(function(d1) {
       d1.values.forEach(function(d2) {
         data.push({
@@ -86,18 +167,61 @@ d3.csv("data.csv", function(error, indata) {
       });
     });
 
+console.log(d3.sum(data, function(d2) { return d2.n; }));
   var total = d3.sum(data, function(d2) { return d2.n; }) / 100;
   data.forEach(function(d) {
     d.interval = d.end - d.start + (d.end > d.start ? 0 : 24);
     d.midpoint = (d.start + d.interval / 2) % 24;
     d.n = d.n / total;
-    
   });
+
 
   data.sort(function(x, y) {
     return d3.ascending(x.n, y.n);
   })
 
+  return data.filter(function(d) {return d.n > 0.01; });
+}
+
+
+function redraw() {
+
+  data = aggdata();
+
+  TIMELINES.selectAll("path").remove();
+
+  TIMELINES.selectAll("path")
+    .data(data, function(d) { return "" + d.start + "." + d.end; })
+    .enter()
+    .append("path")
+      .classed("timeline", true)
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.0018)
+      .style("pointer-events", "none")
+      .attr("d", function(d) { return "M " + xpos(d.start - scale_timewidth(d.n)/2) + " "  + ypos(d.start - scale_timewidth(d.n)/2) + " " +
+                                      "Q " + xpos(d.midpoint, 0) + " " + ypos(d.midpoint, 0) + " " +
+                                             xpos(d.end + scale_timewidth(d.n)/2) + " " + ypos(d.end + scale_timewidth(d.n)/2) + " " +
+                                      "L " + xpos(d.end - scale_timewidth(d.n)/2) + " " + ypos(d.end - scale_timewidth(d.n)/2) + " " +
+                                      "Q " + xpos(d.midpoint, scale_timewidth(d.n)/3.5) + " " + ypos(d.midpoint, scale_timewidth(d.n)/3.5) + " " +
+                                             xpos(d.start + scale_timewidth(d.n)/2) + " "  + ypos(d.start + scale_timewidth(d.n)/2) +
+                                      "Z"; })
+      .attr("fill", function(d) { return d3.interpolateYlGnBu(scale_color(d.n)); } );
+}
+
+
+d3.csv("data.csv", function(error, indata) {
+  if (error) throw error;
+
+  RAWDATA = indata;
+  var data = aggdata();
+
+  d3.select("#mainimg-occupation")
+    .selectAll("option")
+    .data(d3.map(indata, function(d){return d.occupation;}).keys())
+    .enter()
+    .append("option")
+    .attr("value", function(d) { return d; })
+    .text(function(d) { return d; });
 
   
   svg.append("g").selectAll("path")
@@ -131,24 +255,9 @@ d3.csv("data.csv", function(error, indata) {
       .style("pointer-events", "none")
       .attr("font-size", 0.05);
   
+  TIMELINES = svg.append("g");
 
-  svg.append("g").selectAll("path")
-    .data(data)
-    .enter()
-    .filter(function(d) {return d.n > 0.01; })
-    .append("path")
-      .classed("timeline", true)
-      .attr("d", function(d) { return "M " + xpos(d.start - scale_timewidth(d.n)/2) + " "  + ypos(d.start - scale_timewidth(d.n)/2) + " " +
-                                      "Q " + xpos(d.midpoint, 0) + " " + ypos(d.midpoint, 0) + " " +
-                                             xpos(d.end + scale_timewidth(d.n)/2) + " " + ypos(d.end + scale_timewidth(d.n)/2) + " " +
-                                      "L " + xpos(d.end - scale_timewidth(d.n)/2) + " " + ypos(d.end - scale_timewidth(d.n)/2) + " " +
-                                      "Q " + xpos(d.midpoint, scale_timewidth(d.n)/3.5) + " " + ypos(d.midpoint, scale_timewidth(d.n)/3.5) + " " +
-                                             xpos(d.start + scale_timewidth(d.n)/2) + " "  + ypos(d.start + scale_timewidth(d.n)/2) +
-                                      "Z"; })
-      .attr("stroke", "#fff")
-      .attr("fill", function(d) { return d3.interpolateYlGnBu(scale_color(d.n)); } )
-      .attr("stroke-width", 0.0018)
-      .style("pointer-events", "none");
+  redraw();
 
 
 
