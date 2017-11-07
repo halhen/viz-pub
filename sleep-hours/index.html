@@ -160,15 +160,18 @@ button {
 
 
 
-function xpos(time, radius = 1) {
+function xpos(time, radius) {
+  radius = (typeof radius !== 'undefined') ?  radius : 1;
   return radius * Math.sin(2 * Math.PI * time/24);
 }
 
-function ypos(time, radius = 1) {
+function ypos(time, radius) {
+  radius = (typeof radius !== 'undefined') ?  radius : 1;
   return -radius * Math.cos(2 * Math.PI * time/24); 
 }
 
-function setfilter(settings = {}) {
+function setfilter(settings) {
+  settings = (typeof settings !== 'undefined') ?  settings : {};
   document.getElementById('mainimg-age').value = settings.age || '';
   document.getElementById('mainimg-wday').value = settings.wday || '';
   document.getElementById('mainimg-occupation').value = settings.occupation || '';
