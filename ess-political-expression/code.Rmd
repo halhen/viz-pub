@@ -1,0 +1,129 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+European Social Survey data from http://www.europeansocialsurvey.org/data/
+
+At the time of writing, it consists of eight individual rounds, which I downloaded as SPSS .sav file
+
+```{r}
+library(tidyverse)
+library(rgdal)
+library(stringr)
+library(haven)
+
+
+df <- tibble(filename = list.files('../data/ess', 'ESS.*sav', full.names = TRUE)) %>%
+  mutate(data = map(filename, read_spss)) %>%
+  unnest()
+
+```
+
+
+
+There is a region variable in the data, in the NUTS format: http://ec.europa.eu/eurostat/web/nuts .
+In this format, Europe is divided in different detail level. Different countries use different detailed levels
+I downloaded a shapefile of all levels from http://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts
+
+```{r}
+map <- readOGR(dsn='/home/henrik/private/vizyns/data/nuts', layer='NUTS_RG_10M_2013')
+map@data$id <- rownames(map@data)
+map.points <- fortify(map, region='id')
+map.df <- inner_join(map.points, map@data, by='id')
+```
+
+Not all countries are included for our questions. We'll use the country NUTS granularity to paint a
+gray are for regions which have not responded.
+
+```{r}
+df.countries = map.df %>%
+  filter(lat > 30) %>%
+  filter(stringr::str_length(NUTS_ID) == 2) 
+
+```
+
+
+We'll use four different metrics for politcial expression. The question is simply whether the respondent
+have done the activity during the past 12 months.
+
+The survey documentation warns about the sampling error when using regional data. I'll smooth
+the data using a simple hierarchical model on country/region and use the predicted value instead of the raw one.
+
+
+```{r}
+df.tmp <- df %>%
+  transmute(weight = dweight * pweight, region,
+            `Worn political badge` = badge,
+            `Taken part in demonstration` = pbldmn,
+            `Boycotted product` = bctprd,
+            `Signed petition` = sgnptit) %>%
+  gather(key, value, -region, -weight) %>%
+  mutate(key = factor(key, ordered=TRUE, levels=c('Taken part in demonstration', 'Worn political badge', 'Signed petition', 'Boycotted product'))) %>%
+  mutate(value = case_when(value == 1 ~ TRUE,
+                           value == 2 ~ FALSE)) %>%
+  filter(!is.na(value)) %>%
+  filter(!is.na(region)) %>%
+  mutate(cntry = substr(region, 1, 2)) %>%
+  group_by(key) %>%
+  nest() %>%
+  mutate(model = map(data, ~ lme4::lmer(value ~ 0 + (1 | cntry/region), weights = weight, data=.))) %>%
+  mutate(pred = map2(model, data, function(model, data) { predict(model, data) } )) %>%
+  unnest(data, pred) %>%
+  group_by(key, region) %>%
+  summarize(value = mean(pred)) # Pred has the same pred for all respondents in a region, but use mean in case I change something in the future
+  
+```
+
+
+Finally, visualize the predicted value. First add all the countries as gray and then overlay with colored
+polygons where data exists.
+
+
+```{r}
+df.tmp %>%
+  inner_join(map.df, by=c('region'='NUTS_ID')) %>%
+  filter(lat > 30) %>%
+  mutate(value = floor(value * 10)/10) %>%
+  ggplot(aes(long, lat, group=group)) +
+    geom_polygon(data = df.countries, fill="#dddddd", color="#333333", size=0.1) +
+    geom_polygon(aes(fill=value), color="#333333", size=0.1) +
+    coord_equal() +
+    scale_fill_distiller(palette="OrRd", direction=1) +
+    coord_map("ortho", orientation = c(57.7, 14.2, 0), xlim=c(-30, 35)) +
+    facet_wrap(~ key) +
+    ggthemes::theme_map() +
+    theme(strip.background = element_blank(),
+          text = element_text(family='Lato', size=14)) +
+    
+
+
+ggsave('/tmp/out.svg', width=10, height=10)
+
+```
+
+
+Finally, I retouched the SVG in Inkscape (which struggled with the rather large file), exported to PNG and sharpened in GIMP.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
