@@ -4,7 +4,9 @@ output: html_notebook
 ---
 
 
-A very brief writeup of how to create ![this image](https://raw.githubusercontent.com/halhen/viz-pub/master/ess-political-expression/out.svg.png){width=400px}
+A very brief writeup of how to create [this image](https://raw.githubusercontent.com/halhen/viz-pub/master/ess-political-expression/out.svg.png).
+
+![](https://raw.githubusercontent.com/halhen/viz-pub/master/ess-political-expression/out.svg.png)
 
 I used data from European Social Survey, avialable at http://www.europeansocialsurvey.org/data/. At the time of writing, it consists of eight individual rounds, which I downloaded as SPSS .sav file
 
