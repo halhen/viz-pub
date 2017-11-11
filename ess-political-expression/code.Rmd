@@ -3,9 +3,10 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-European Social Survey data from http://www.europeansocialsurvey.org/data/
 
-At the time of writing, it consists of eight individual rounds, which I downloaded as SPSS .sav file
+A very brief writeup of how to create ![this image](https://raw.githubusercontent.com/halhen/viz-pub/master/ess-political-expression/out.svg.png){width=400px}
+
+I used data from European Social Survey, avialable at http://www.europeansocialsurvey.org/data/. At the time of writing, it consists of eight individual rounds, which I downloaded as SPSS .sav file
 
 ```{r}
 library(tidyverse)
@@ -21,10 +22,7 @@ df <- tibble(filename = list.files('../data/ess', 'ESS.*sav', full.names = TRUE)
 ```
 
 
-
-There is a region variable in the data, in the NUTS format: http://ec.europa.eu/eurostat/web/nuts .
-In this format, Europe is divided in different detail level. Different countries use different detailed levels
-I downloaded a shapefile of all levels from http://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts
+There is a region variable in the data, in the [NUTS format](http://ec.europa.eu/eurostat/web/nuts), which divides Europe in different detail levels. Different countries use different detail levels for the survey, but there is a shapefile available of all levels simultaneously at [Eurostat](http://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts).
 
 ```{r}
 map <- readOGR(dsn='/home/henrik/private/vizyns/data/nuts', layer='NUTS_RG_10M_2013')
@@ -33,8 +31,7 @@ map.points <- fortify(map, region='id')
 map.df <- inner_join(map.points, map@data, by='id')
 ```
 
-Not all countries are included for our questions. We'll use the country NUTS granularity to paint a
-gray are for regions which have not responded.
+(We'll use the basic country shapes later, to show countries without data in the final chart).
 
 ```{r}
 df.countries = map.df %>%
@@ -44,11 +41,9 @@ df.countries = map.df %>%
 ```
 
 
-We'll use four different metrics for politcial expression. The question is simply whether the respondent
-have done the activity during the past 12 months.
+I picked four different metrics for politcial expression. The question for these is simply whether the respondent have done the activity during the past 12 months.
 
-The survey documentation warns about the sampling error when using regional data. I'll smooth
-the data using a simple hierarchical model on country/region and use the predicted value instead of the raw one.
+The survey documentation warns about the sampling error when using regional data -- some regions are simply too small to produce an accurate estimate. I'll smooth the data using a simple hierarchical model on country/region and use the predicted value instead of the raw one.
 
 
 ```{r}
@@ -76,8 +71,7 @@ df.tmp <- df %>%
 ```
 
 
-Finally, visualize the predicted value. First add all the countries as gray and then overlay with colored
-polygons where data exists.
+Next, I visualize the predicted value. On the first visual layer I add all the countries (remember `df.countries` from before?) as gray and then overlay all regions where data exists as colored polygons.
 
 
 ```{r}
