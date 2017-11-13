@@ -8,18 +8,15 @@ A very brief writeup of how to create [this image](https://raw.githubusercontent
 
 ![](https://raw.githubusercontent.com/halhen/viz-pub/master/ess-political-expression/out.svg.png)
 
-I used data from European Social Survey, avialable at http://www.europeansocialsurvey.org/data/. At the time of writing, it consists of eight individual rounds, which I downloaded as SPSS .sav file
+I used data from European Social Survey, avialable at http://www.europeansocialsurvey.org/data/ and via the [ess package](https://cran.r-project.org/web/packages/ess/index.html).
 
 ```{r}
 library(tidyverse)
 library(rgdal)
 library(stringr)
-library(haven)
 
-
-df <- tibble(filename = list.files('../data/ess', 'ESS.*sav', full.names = TRUE)) %>%
-  mutate(data = map(filename, read_spss)) %>%
-  unnest()
+df <- ess::ess_all_rounds('<your email>')
+df <- plyr::rbind.fill(df)
 
 ```
 
@@ -27,7 +24,11 @@ df <- tibble(filename = list.files('../data/ess', 'ESS.*sav', full.names = TRUE)
 There is a region variable in the data, in the [NUTS format](http://ec.europa.eu/eurostat/web/nuts), which divides Europe in different detail levels. Different countries use different detail levels for the survey, but there is a shapefile available of all levels simultaneously at [Eurostat](http://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts).
 
 ```{r}
-map <- readOGR(dsn='/home/henrik/private/vizyns/data/nuts', layer='NUTS_RG_10M_2013')
+temp <- tempfile(fileext = ".zip")
+download.file("http://ec.europa.eu/eurostat/cache/GISCO/geodatafiles/NUTS_2013_10M_SH.zip", temp)
+unzip(temp)
+
+map <- readOGR(dsn='./NUTS_2013_10M_SH/data', layer='NUTS_RG_10M_2013')
 map@data$id <- rownames(map@data)
 map.points <- fortify(map, region='id')
 map.df <- inner_join(map.points, map@data, by='id')
@@ -49,6 +50,7 @@ The survey documentation warns about the sampling error when using regional data
 
 
 ```{r}
+
 df.tmp <- df %>%
   transmute(weight = dweight * pweight, region,
             `Worn political badge` = badge,
@@ -90,11 +92,11 @@ df.tmp %>%
     facet_wrap(~ key) +
     ggthemes::theme_map() +
     theme(strip.background = element_blank(),
-          text = element_text(family='Lato', size=14)) +
+          text = element_text(family='Lato', size=14))
     
 
 
-ggsave('/tmp/out.svg', width=10, height=10)
+ggsave('out.svg', width=10, height=10)
 
 ```
 
