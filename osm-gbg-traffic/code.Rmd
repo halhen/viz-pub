@@ -1,0 +1,192 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(rvest)
+library(OpenStreetMap)
+```
+
+
+Gothenburg, my home city of about half a million inhabitants, has [published data on traffic flow](http://www.statistik.tkgbg.se/). I realized this a while back, and have since been wanting to visualize this data. Here is my first take on this, which involves my first non-trivial dipping-toes into OpenStreetMap and working with spatial data beyond the copy/paste shapefile choropleth map.
+
+Full disclosure: I have zero experience in traffic flow analysis and close-to-zero in GIS, so consider this a first-time amateur's joyful attempt. There's a link to my Twitter at the bottom if you want to point out my beginner mistakes.
+
+## Data
+
+The data is published as a website of HTML files, one for each street. In each file, there is a table with individual segments of said street and the statistics I'm interested in. To get the scraping right without overloading the webside, I downloaded a copy of it:
+
+```{bash}
+ $ wget -r -np -k http://www.statistik.tkgbg.se
+```
+
+One single table contains all data for one street. Thankfully, the structure is the same on each page, and we only need the first three columns:
+
+ * Stretch (denoted as the intersections with other streets or other named landmarks as endpoints)
+ * Measured year
+ * The number of cars passing by said stretch on an average workday.
+ 
+```{r}
+parse_street <- function(streetfile) {
+  print(streetfile) # To see some progress
+  df.tmp <- read_html(streetfile) %>%
+    html_node('table') %>%
+    html_table(fill=TRUE) 
+  
+  df.tmp[,1:3] %>% # First three columns
+    filter(Delsträcka != 'Delsträcka') %>% # Remove the second header row
+    transmute(stretch = na_if(`Delsträcka`, ""), # Set non-existent stretches to NA
+              year = as.integer(År),
+              cars = as.numeric(gsub('[^0-9]', '', `ÅMVD (bilar/dygn)`))) %>%
+    separate(stretch, into=c('from', 'to'), sep=' – ') %>%
+    mutate(from = zoo::na.locf(from), # Replace the NA stretches with the most recent one seend
+           to = zoo::na.locf(to))
+}
+
+
+
+df <- tibble(filename = list.files('www.statistik.tkgbg.se/', '.*.html', full.names = TRUE, recursive = TRUE)) %>%
+  filter(!str_detect(filename, 'index.html')) %>%
+  mutate(data = map(filename, parse_street)) %>%
+  unnest(data) %>%
+  mutate(street = str_replace_all(filename, '.*/', '') %>% str_replace_all('.html', '')) %>%
+  select(street, everything(), -filename) 
+```
+
+To get a first grasp on the data, I plotted the sections as a plain graph using [`ggraph`](https://cran.r-project.org/web/packages/ggraph/index.html). Plotting the top few hundred sections already gives a bunch of information! While the node names makes little sense for anyone who isn't familiar with Gothenburg, it makes a lot of sense for someone who is. There is a large aorta of traffic with a bunch of branches that carry lots of cars through the city.
+
+
+```{r}
+library(ggraph)
+
+df %>%
+  arrange(-cars) %>%
+  filter(from != 'Kommungränsen', to != 'Kommungränsen') %>% # Kommungräns means county boarder and refers to multiple points
+  group_by(street, from, to) %>%
+  filter(year == max(year)) %>% # use most recent measure
+  ungroup() %>%
+  head(200) %>%
+  select(from, to, cars, street) %>%
+  igraph::graph_from_data_frame() %>%
+  ggraph() +
+    geom_edge_link(aes(width=cars)) +
+    geom_node_label(aes(label=name), alpha=0.7, size=2)
+  
+ggsave('graph.png', width=10, height=8)
+```
+
+
+
+
+## OpenStreetMap
+
+Now, he idea was to get this data drawn on a map to somehow show the major flows of traffic. For this I also need the coordinates for the roads. Time to finally dig into OpenStreetMap and its data.
+
+Being fond of the tidy square dataframe, my first attempt was to use [Bob Rudis' `overpass` package](https://github.com/hrbrmstr/overpass) to fetch some CSV data:
+
+```{r}
+library(overpass)
+
+opq <- overpass_query('
+[out:csv(::type, ::id, ::lat, ::lon, "name")];
+way(57.634651,11.8297,57.763989,12.146931)[highway][name];
+foreach(
+  out;
+  node(w);
+  out;
+);
+')
+```
+
+This step, truth to be told, took a good while longer than the single sentence paragraph above might indicate. From impatience, I mostly copy/paste/edit/tried the process by example, until I finally decided to read up a little on OverpassQL, the language used to query OpenStreetMap data. Some tips I picked up along they way: Anybody dipping their toes in this language should check out the immensely useful [overpass turbo](https://overpass-turbo.eu/) which lets you try different queries, visualizes the results and gives helpful error messages. I used [this tool](http://boundingbox.klokantech.com/) to figure out the bounding box of the area I'm interested in.
+
+
+As it turns out though, OpenStreetMap CSV data does not preserve the order of nodes along a way. Plotting unordered nodes made drawing the paths look like a hairball. Not good enough. For my second attempt, I tried `overpass`'s support for XML data, which preserves order between individual nodes along a bath. However, `overpass` struggled with performance on this much data, supposedly from being written in vanilla R. Parsing the road network for Gothenburg took about an hour. I decided to check out the other viable alternative: [`osmdata`](https://cran.r-project.org/web/packages/osmdata/index.html).
+
+
+`osmdata` hides a lot of the particulars around OverpassQL, but having painfully gotten my head around the basics of the language made the transition easier. The query below does roughly the same thing as the `overpass` query above but with the node order preserved and in a couple of seconds. I also had to spend a little time to figure out which tags to look for. By using the [https://www.openstreetmap.org](https://www.openstreetmap.org) "Query features" tool (question mark in the menu to the right), I could figure out which tags that seemed to be common for the roads I was interested in. In the end, I came to look for roads ([key: `highway`](https://wiki.openstreetmap.org/wiki/Key:highway)) that had either a [`name`](https://wiki.openstreetmap.org/wiki/Key:name) or a [speed limit (`maxspeed`)](https://wiki.openstreetmap.org/wiki/Key:maxspeed). It's not perfect -- some junctions are missing, for example -- but good enough for my purposes.
+
+```{r}
+library(osmdata)
+
+data <- opq(bbox = c(11.8297,57.634651,12.146931,57.763989)) %>%
+  add_osm_feature(key = 'highway') %>%
+  add_osm_feature(key = 'name|maxspeed', value=".*", key_exact = FALSE, value_exact = FALSE) %>%
+  osmdata_sf()
+```
+
+
+Now, trying to think of how to identify individual sections of each street I came up with nothing. I decided that I had covered enough new ground for a single project and to take a shortcut here. Instead of mapping each section's traffic flow, I averaged the flow for the street and mapped that. (Yes, dear traffic flow specialists; I'm sure this is a mortal sin that will forever ban me from the profession. I wouldn't be surprised if I get back to do this properly some other time when I've got some  more tools for it. Tips are welcome.)
+
+Anyway, after fiddling a little with ggplot settings, I got the following:
+
+```{r}
+data$osm_lines %>%
+  mutate(name = case_when(int_ref == 'E 45' ~ 'Marieholmsleden',
+                          int_ref == 'E 06' ~ 'Norgevägen',
+                          int_ref == 'E 06;E 20' ~ 'Kungsbackaleden',
+                          TRUE ~ as.character(name))) %>%
+  left_join(df %>%
+              group_by(street) %>%
+              summarize(cars = mean(cars)),
+            by = c('name' = 'street')) %>%
+  {
+    ggplot(., aes(size = coalesce(cars, 100), color=cars)) +  
+      geom_sf(date = filter(., is.na(cars)), geom='path') + # First the NA values, so we don't get gray lines on top of colored
+      geom_sf(data = filter(., !is.na(cars)), geom='path') + # Then colored
+      scale_size_continuous(range=c(0.3, 1), guide="none") +
+      scale_color_gradientn(colors = rev(c('#FFC65B','#EB9026','#B65419','#662918')), na.value = "#52413D", trans="log10") +
+      ggthemes::theme_map() +
+      theme(text = element_text(color='white'),
+            plot.background = element_rect(fill = 'black'),
+            panel.background = element_rect(fill = 'black'),
+            legend.background = element_rect(fill = 'black'),
+            panel.grid.major = element_line(color = 'transparent'))
+  } 
+
+
+ggsave('out.png', width=18, height=8, bg='black')
+```
+
+
+
+Kinda' cool, and more or less what I had in mind. As usual you can tell a lot of different stories depending on how you color the chart. In the end, a log-transform with this theme gives me a fairly good overview of my home town.
+
+
+Thinking about this write-up, I also decided that I wanted to give you, dear reader, the chance to render a map of your own town. Since I don't have traffic data for other places, I wanted to try some other metric. Lo and behold, we already touched on one when thinking about how to get the important streets out of OSM: speed limits. And, while we're at it, number of lanes makes sense for line size.
+
+And so, in a single batch of piped beauty, here are the the roads of Gothenburg colored by speed limits:
+
+```{r}
+opq(bb = getbb("Gothenburg Sweden")) %>%
+  add_osm_feature(key = 'highway') %>%
+  add_osm_feature(key = 'name|maxspeed', value=".*", key_exact = FALSE, value_exact = FALSE) %>%
+  osmdata_sf() %>%
+  .[['osm_lines']] %>%
+  mutate(lanes = coalesce(as.numeric(as.character(lanes)), 1), # Set 1 lanes as default
+         maxspeed = as.numeric(as.character(maxspeed))) %>%
+  {
+    ggplot(., aes(size=lanes, color=maxspeed)) +  
+      geom_sf(date = filter(., is.na(maxspeed)), geom='path') + # First the NA values, so we don't get gray lines on top of colored
+      geom_sf(data = filter(., !is.na(maxspeed)), geom='path') + # Then colored
+      scale_size_continuous(range=c(0.3, 1), guide="none") +
+      scale_color_gradientn(colors = rev(c('#FFC65B','#EB9026','#B65419','#662918')), na.value = "#52413D") +
+      ggthemes::theme_map() +
+      theme(text = element_text(color='white'),
+            plot.background = element_rect(fill = 'black'),
+            panel.background = element_rect(fill = 'black'),
+            legend.background = element_rect(fill = 'black'),
+            panel.grid.major = element_line(color = 'transparent'))
+  }
+
+ggsave('speed.png', width=15, height=15, bg='black', dpi=100)
+  
+```
+
+
+The two charts are remarkably similar. This makes sense, I suppose. Chicken or egg, higher capacity roads are probably built where more people travel and more people probably travel where there are higher capacity roads. Try it yourself, but keep in mind that rendering the plot for this half-a-million-inhabitant area takes some twenty seconds.
+
+Originally, I set out to map traffic flow in Gothenburg by each segment that was measured. During the course of this little thing, I realized that there are quite some techniques to learn around spatial analysis. Next for me is to pick up a few books on GIS, and to keep exploring `sf` which seems to tie in well with my mental R model. If you've got tips or comments, ping me on [Twitter](https://twitter.com/hnrklndbrg)!
