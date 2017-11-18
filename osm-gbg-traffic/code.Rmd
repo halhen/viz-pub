@@ -45,7 +45,7 @@ parse_street <- function(streetfile) {
               year = as.integer(År),
               cars = as.numeric(gsub('[^0-9]', '', `ÅMVD (bilar/dygn)`))) %>%
     separate(stretch, into=c('from', 'to'), sep=' – ') %>%
-    mutate(from = zoo::na.locf(from), # Replace the NA stretches with the most recent one seend
+    mutate(from = zoo::na.locf(from), # Replace the NA stretches with the most recent one
            to = zoo::na.locf(to))
 }
 
@@ -110,7 +110,7 @@ This step, truth to be told, took a good while longer than the single sentence p
 As it turns out though, OpenStreetMap CSV data does not preserve the order of nodes along a way. Plotting unordered nodes made drawing the paths look like a hairball. Not good enough. For my second attempt, I tried `overpass`'s support for XML data, which preserves order between individual nodes along a bath. However, `overpass` struggled with performance on this much data, supposedly from being written in vanilla R. Parsing the road network for Gothenburg took about an hour. I decided to check out the other viable alternative: [`osmdata`](https://cran.r-project.org/web/packages/osmdata/index.html).
 
 
-`osmdata` hides a lot of the particulars around OverpassQL, but having painfully gotten my head around the basics of the language made the transition easier. The query below does roughly the same thing as the `overpass` query above but with the node order preserved and in a couple of seconds. I also had to spend a little time to figure out which tags to look for. By using the [https://www.openstreetmap.org](https://www.openstreetmap.org) "Query features" tool (question mark in the menu to the right), I could figure out which tags that seemed to be common for the roads I was interested in. In the end, I came to look for roads ([key: `highway`](https://wiki.openstreetmap.org/wiki/Key:highway)) that had either a [`name`](https://wiki.openstreetmap.org/wiki/Key:name) or a [speed limit (`maxspeed`)](https://wiki.openstreetmap.org/wiki/Key:maxspeed). It's not perfect -- some junctions are missing, for example -- but good enough for my purposes.
+`osmdata` hides a lot of the particulars around OverpassQL, but having painfully gotten my head around the basics of the language helped me quickly make sense of the library. The query below does roughly the same thing as the `overpass` query above but with the node order preserved and in a couple of seconds. I also had to spend a little time to figure out which tags to look for. By using the [https://www.openstreetmap.org](https://www.openstreetmap.org) "Query features" tool (question mark in the menu to the right), I could figure out which tags that seemed to be common for the roads I was interested in. In the end, I came to look for roads ([key: `highway`](https://wiki.openstreetmap.org/wiki/Key:highway)) that had either a [`name`](https://wiki.openstreetmap.org/wiki/Key:name) or a [speed limit (`maxspeed`)](https://wiki.openstreetmap.org/wiki/Key:maxspeed). It's not perfect -- some junctions are missing, for example -- but good enough for my purposes.
 
 ```{r}
 library(osmdata)
@@ -122,7 +122,7 @@ data <- opq(bbox = c(11.8297,57.634651,12.146931,57.763989)) %>%
 ```
 
 
-Now, trying to think of how to identify individual sections of each street I came up with nothing. I decided that I had covered enough new ground for a single project and to take a shortcut here. Instead of mapping each section's traffic flow, I averaged the flow for the street and mapped that. (Yes, dear traffic flow specialists; I'm sure this is a mortal sin that will forever ban me from the profession. I wouldn't be surprised if I get back to do this properly some other time when I've got some  more tools for it. Tips are welcome.)
+Now, trying to think of how to identify individual sections of each street I came up with nothing. I decided that I had covered enough new ground for a single project and to take a shortcut here. Instead of mapping each section's traffic flow, I averaged the flow for the street as a whole and mapped that. (Yes, dear traffic flow specialists; I'm sure this is a mortal sin that will forever ban me from the profession. I wouldn't be surprised if I get back to do this properly some other time when I've got some  more tools for it. Tips are welcome.)
 
 Anyway, after fiddling a little with ggplot settings, I got the following:
 
@@ -162,7 +162,7 @@ Kinda' cool, and more or less what I had in mind. As usual you can tell a lot of
 
 Thinking about this write-up, I also decided that I wanted to give you, dear reader, the chance to render a map of your own town. Since I don't have traffic data for other places, I wanted to try some other metric. Lo and behold, we already touched on one when thinking about how to get the important streets out of OSM: speed limits. And, while we're at it, number of lanes makes sense for line size.
 
-And so, in a single batch of piped beauty, here are the the roads of Gothenburg colored by speed limits:
+And so, in a single batch of piped beauty, here are the the roads of Gothenburg colored by speed limits. (Well, colored for the roads that had speed limit data in OSM, at least.)
 
 ```{r}
 opq(bb = getbb("Gothenburg Sweden")) %>%
@@ -174,8 +174,8 @@ opq(bb = getbb("Gothenburg Sweden")) %>%
          maxspeed = as.numeric(as.character(maxspeed))) %>%
   {
     ggplot(., aes(size=lanes, color=maxspeed)) +  
-      geom_sf(date = filter(., is.na(maxspeed)), geom='path') + # First the NA values, so we don't get gray lines on top of colored
-      geom_sf(data = filter(., !is.na(maxspeed)), geom='path') + # Then colored
+      geom_sf(date = filter(., is.na(maxspeed))) + # First the NA values, so we don't get gray lines on top of colored
+      geom_sf(data = filter(., !is.na(maxspeed))) + # Then colored
       scale_size_continuous(range=c(0.3, 1), guide="none") +
       scale_color_gradientn(colors = rev(c('#FFC65B','#EB9026','#B65419','#662918')), na.value = "#52413D") +
       ggthemes::theme_map() +
