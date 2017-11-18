@@ -11,6 +11,9 @@ library(OpenStreetMap)
 ```
 
 
+![end result](https://raw.githubusercontent.com/halhen/viz-pub/master/osm-gbg-traffic/out.png)
+
+
 Gothenburg, my home city of about half a million inhabitants, has [published data on traffic flow](http://www.statistik.tkgbg.se/). I realized this a while back, and have since been wanting to visualize this data. Here is my first take on this, which involves my first non-trivial dipping-toes into OpenStreetMap and working with spatial data beyond the copy/paste shapefile choropleth map.
 
 Full disclosure: I have zero experience in traffic flow analysis and close-to-zero in GIS, so consider this a first-time amateur's joyful attempt. There's a link to my Twitter at the bottom if you want to point out my beginner mistakes.
@@ -78,7 +81,7 @@ df %>%
 ggsave('graph.png', width=10, height=8)
 ```
 
-
+![end result](https://raw.githubusercontent.com/halhen/viz-pub/master/osm-gbg-traffic/graph.png)
 
 
 ## OpenStreetMap
@@ -151,6 +154,7 @@ data$osm_lines %>%
 ggsave('out.png', width=18, height=8, bg='black')
 ```
 
+![end result](https://raw.githubusercontent.com/halhen/viz-pub/master/osm-gbg-traffic/out.png)
 
 
 Kinda' cool, and more or less what I had in mind. As usual you can tell a lot of different stories depending on how you color the chart. In the end, a log-transform with this theme gives me a fairly good overview of my home town.
@@ -186,6 +190,7 @@ ggsave('speed.png', width=15, height=15, bg='black', dpi=100)
   
 ```
 
+![end result](https://raw.githubusercontent.com/halhen/viz-pub/master/osm-gbg-traffic/speed.png)
 
 The two charts are remarkably similar. This makes sense, I suppose. Chicken or egg, higher capacity roads are probably built where more people travel and more people probably travel where there are higher capacity roads. Try it yourself, but keep in mind that rendering the plot for this half-a-million-inhabitant area takes some twenty seconds.
 
