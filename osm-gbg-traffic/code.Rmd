@@ -20,7 +20,7 @@ Full disclosure: I have zero experience in traffic flow analysis and close-to-ze
 
 ## Data
 
-The data is published as a website of HTML files, one for each street. In each file, there is a table with individual segments of said street and the statistics I'm interested in. To get the scraping right without overloading the webside, I downloaded a copy of it:
+The data is published as a website of HTML files, one for each street. In each file, there is a table with individual segments of said street and the statistics I'm interested in. To get the scraping right without overloading the website, I downloaded a copy of it:
 
 ```{bash}
  $ wget -r -np -k http://www.statistik.tkgbg.se
@@ -86,7 +86,7 @@ ggsave('graph.png', width=10, height=8)
 
 ## OpenStreetMap
 
-Now, he idea was to get this data drawn on a map to somehow show the major flows of traffic. For this I also need the coordinates for the roads. Time to finally dig into OpenStreetMap and its data.
+Now, the idea was to get this data drawn on a map to somehow show the major flows of traffic. For this I also need the coordinates for the roads. Time to finally dig into OpenStreetMap and its data.
 
 Being fond of the tidy square dataframe, my first attempt was to use [Bob Rudis' `overpass` package](https://github.com/hrbrmstr/overpass) to fetch some CSV data:
 
@@ -104,13 +104,13 @@ foreach(
 ')
 ```
 
-This step, truth to be told, took a good while longer than the single sentence paragraph above might indicate. From impatience, I mostly copy/paste/edit/tried the process by example, until I finally decided to read up a little on OverpassQL, the language used to query OpenStreetMap data. Some tips I picked up along they way: Anybody dipping their toes in this language should check out the immensely useful [overpass turbo](https://overpass-turbo.eu/) which lets you try different queries, visualizes the results and gives helpful error messages. I used [this tool](http://boundingbox.klokantech.com/) to figure out the bounding box of the area I'm interested in.
+This step, truth to be told, took a good while longer than the single sentence paragraph above might suggest. From impatience, I mostly copy/paste/edit/tried the process by example, until I finally decided to read up a little on OverpassQL, the language used to query OpenStreetMap data. Some tips I picked up along they way: Anybody dipping their toes in this language should check out the immensely useful [overpass turbo](https://overpass-turbo.eu/) which lets you try different queries, visualizes the results and gives helpful error messages. I used [this tool](http://boundingbox.klokantech.com/) to figure out the bounding box of the area I'm interested in.
 
 
-As it turns out though, OpenStreetMap CSV data does not preserve the order of nodes along a way. Plotting unordered nodes made drawing the paths look like a hairball. Not good enough. For my second attempt, I tried `overpass`'s support for XML data, which preserves order between individual nodes along a bath. However, `overpass` struggled with performance on this much data, supposedly from being written in vanilla R. Parsing the road network for Gothenburg took about an hour. I decided to check out the other viable alternative: [`osmdata`](https://cran.r-project.org/web/packages/osmdata/index.html).
+As it turns out though, OpenStreetMap CSV data does not preserve the order of nodes along a way. Plotting unordered nodes made drawing the paths look like a hairball. Not good enough. For my second attempt, I tried `overpass`'s support for XML data, which preserves order between individual nodes along a path. However, `overpass` struggled with performance on this much data, supposedly from being written in vanilla R. Parsing the road network for Gothenburg took about an hour. I decided to check out the other viable alternative: [`osmdata`](https://cran.r-project.org/web/packages/osmdata/index.html).
 
 
-`osmdata` hides a lot of the particulars around OverpassQL, but having painfully gotten my head around the basics of the language helped me quickly make sense of the library. The query below does roughly the same thing as the `overpass` query above but with the node order preserved and in a couple of seconds. I also had to spend a little time to figure out which tags to look for. By using the [https://www.openstreetmap.org](https://www.openstreetmap.org) "Query features" tool (question mark in the menu to the right), I could figure out which tags that seemed to be common for the roads I was interested in. In the end, I came to look for roads ([key: `highway`](https://wiki.openstreetmap.org/wiki/Key:highway)) that had either a [`name`](https://wiki.openstreetmap.org/wiki/Key:name) or a [speed limit (`maxspeed`)](https://wiki.openstreetmap.org/wiki/Key:maxspeed). It's not perfect -- some junctions are missing, for example -- but good enough for my purposes.
+`osmdata` hides a lot of the particulars around OverpassQL. Still, having painfully gotten my head around the basics of the language helped me quickly make sense of the library. The query below does roughly the same thing as the `overpass` query above but with the node order preserved and in a couple of seconds. I also had to spend a little time to figure out which tags to look for. By using the [https://www.openstreetmap.org](https://www.openstreetmap.org) "Query features" tool (question mark in the menu to the right), I could figure out which tags that seemed to be common for the roads I was interested in. In the end, I came to look for roads ([key: `highway`](https://wiki.openstreetmap.org/wiki/Key:highway)) that had either a [`name`](https://wiki.openstreetmap.org/wiki/Key:name) or a [speed limit (`maxspeed`)](https://wiki.openstreetmap.org/wiki/Key:maxspeed). It's not perfect -- some junctions are missing, for example -- but good enough for my purposes.
 
 ```{r}
 library(osmdata)
