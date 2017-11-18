@@ -14,7 +14,7 @@ library(OpenStreetMap)
 ![end result](https://raw.githubusercontent.com/halhen/viz-pub/master/osm-gbg-traffic/out.png)
 
 
-Gothenburg, my home city of about half a million inhabitants, has [published data on traffic flow](http://www.statistik.tkgbg.se/). I realized this a while back, and have since been wanting to visualize this data. Here is my first take on this, which involves my first non-trivial dipping-toes into OpenStreetMap and working with spatial data beyond the copy/paste shapefile choropleth map.
+Gothenburg ([map](https://www.openstreetmap.org/search?query=gothenburg%20sweden#map=12/57.7074/11.9674)), my home city of about half a million inhabitants, has [published data on traffic flow](http://www.statistik.tkgbg.se/). I realized this a while back, and have since been wanting to visualize this data. Here is my first take on this, which involves my first non-trivial dipping-toes into OpenStreetMap and working with spatial data beyond the copy/paste shapefile choropleth map.
 
 Full disclosure: I have zero experience in traffic flow analysis and close-to-zero in GIS, so consider this a first-time amateur's joyful attempt. There's a link to my Twitter at the bottom if you want to point out my beginner mistakes.
 
@@ -81,7 +81,7 @@ df %>%
 ggsave('graph.png', width=10, height=8)
 ```
 
-![end result](https://raw.githubusercontent.com/halhen/viz-pub/master/osm-gbg-traffic/graph.png)
+![as a graph](https://raw.githubusercontent.com/halhen/viz-pub/master/osm-gbg-traffic/graph.png)
 
 
 ## OpenStreetMap
@@ -138,8 +138,8 @@ data$osm_lines %>%
             by = c('name' = 'street')) %>%
   {
     ggplot(., aes(size = coalesce(cars, 100), color=cars)) +  
-      geom_sf(date = filter(., is.na(cars)), geom='path') + # First the NA values, so we don't get gray lines on top of colored
-      geom_sf(data = filter(., !is.na(cars)), geom='path') + # Then colored
+      geom_sf(date = filter(., is.na(cars))) + # First the NA values, so we don't get gray lines on top of colored
+      geom_sf(data = filter(., !is.na(cars))) + # Then colored
       scale_size_continuous(range=c(0.3, 1), guide="none") +
       scale_color_gradientn(colors = rev(c('#FFC65B','#EB9026','#B65419','#662918')), na.value = "#52413D", trans="log10") +
       ggthemes::theme_map() +
@@ -190,8 +190,8 @@ ggsave('speed.png', width=15, height=15, bg='black', dpi=100)
   
 ```
 
-![end result](https://raw.githubusercontent.com/halhen/viz-pub/master/osm-gbg-traffic/speed.png)
+![speed chart](https://raw.githubusercontent.com/halhen/viz-pub/master/osm-gbg-traffic/speed.png)
 
-The two charts are remarkably similar. This makes sense, I suppose. Chicken or egg, higher capacity roads are probably built where more people travel and more people probably travel where there are higher capacity roads. Try it yourself, but keep in mind that rendering the plot for this half-a-million-inhabitant area takes some twenty seconds.
+The two charts are remarkably similar. This makes sense, I suppose. Chicken or egg, higher capacity roads are probably built where more people travel and more people probably travel where there are higher capacity roads. Try it on your own home towm, but keep in mind that rendering the plot just for this half-a-million-inhabitant area takes some twenty seconds.
 
 Originally, I set out to map traffic flow in Gothenburg by each segment that was measured. During the course of this little thing, I realized that there are quite some techniques to learn around spatial analysis. Next for me is to pick up a few books on GIS, and to keep exploring `sf` which seems to tie in well with my mental R model. If you've got tips or comments, ping me on [Twitter](https://twitter.com/hnrklndbrg)!
