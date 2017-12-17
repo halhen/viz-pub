@@ -1,0 +1,1040 @@
+varname	code	name
+bdypt	 0	internal
+bdypt	30	shoulder
+bdypt	31	upper trunk
+bdypt	32	elbow
+bdypt	33	lower arm
+bdypt	34	wrist
+bdypt	35	knee
+bdypt	36	lower leg
+bdypt	37	ankle
+bdypt	38	pubic region
+bdypt	75	head
+bdypt	76	face
+bdypt	77	eyeball
+bdypt	79	lower trunk
+bdypt	80	upper arm
+bdypt	81	upper leg
+bdypt	82	hand
+bdypt	83	foot
+bdypt	84	25-50% of body
+bdypt	85	all parts body
+bdypt	87	not stated/unknown
+bdypt	88	mouth
+bdypt	89	neck
+bdypt	92	finger
+bdypt	93	toe
+bdypt	94	ear
+diag	41	ingestion
+diag	42	aspiration
+diag	46	burn, electrical
+diag	47	burn, not specified
+diag	48	burn, scald
+diag	49	burn, chemical
+diag	50	amputation
+diag	51	burns, thermal
+diag	52	concussion
+diag	53	contusions, abrasion
+diag	54	crushing
+diag	55	dislocation
+diag	56	foreign body
+diag	57	fracture
+diag	58	hematoma
+diag	59	laceration
+diag	60	dental injury
+diag	61	nerve damage
+diag	62	internal injury
+diag	63	puncture
+diag	64	strain, sprain
+diag	65	anoxia
+diag	66	hemorrhage
+diag	67	electric shock
+diag	68	poisoning
+diag	69	submersion
+diag	70	not stated or unknown
+diag	71	other
+diag	72	avulsion
+diag	73	radiation
+diag	74	dermatitis/conjunctivitis
+disp	1	treated and released
+disp	2	transferred
+disp	4	hospitalized
+disp	5	held for observation
+disp	6	left without treatment
+disp	8	doa/died in er
+disp	9	unknown
+fire	0	no fire
+fire	1	fire department attended
+fire	2	fire department did not attend
+fire	3	unknown if fire dept. attended
+locale	0	unknown
+locale	1	home
+locale	2	farm
+locale	3	apartment
+locale	4	street
+locale	5	public
+locale	6	mobile/manufactured home
+locale	7	industrial
+locale	8	school
+locale	9	sports
+gender	0	unknown
+gender	1	male
+gender	2	female
+race	0	unknown
+race	1	white
+race	2	black
+race	3	other
+product	 101	washing machines without wringers or other dryers
+product	 102	wringer washing machines
+product	 103	washing machines with unheated spin dryers
+product	 106	electric clothes dryers without washers
+product	 107	gas clothes dryers without washers
+product	 108	mangle irons
+product	 110	electric heating pads
+product	 112	sewing machines or accessories
+product	 113	floor buffers or waxers
+product	 114	rug shampooers
+product	 115	vacuum cleaners
+product	 116	electric brooms
+product	 118	gas water heaters
+product	 119	electric water heaters
+product	 125	water softeners or conditioners (appliances)
+product	 126	washing machines, not specified
+product	 127	clothes dryers, not specified
+product	 131	propane, lp or butane gas tanks or fittings
+product	 132	electric blankets or sheets
+product	 133	other water heaters
+product	 134	water heaters, not specified
+product	 135	washer-dryer combinations (within one frame)
+product	 136	drinking fountains
+product	 137	automatic doors or door openers
+product	 138	automatic garage doors or door openers
+product	 139	incinerators
+product	 140	washing machines, other or not specified
+product	 202	electric counter-mounted cooking surfaces
+product	 204	gas counter-mounted cooking surfaces
+product	 212	electric corn poppers
+product	 213	electric can openers
+product	 214	dishwashers
+product	 215	electric blenders
+product	 216	electric counter-top ovens, broilers or toaster ovens
+product	 217	electric coffee makers or teapots
+product	 218	electric or battery-powered knives
+product	 219	electric deep fryers
+product	 221	food warmers
+product	 222	electric frying pans and skillets
+product	 223	electric griddles
+product	 224	hot plates
+product	 227	ice makers (separate from refrigerators)
+product	 231	electric mixers
+product	 232	electric scissors
+product	 234	toasters
+product	 235	electric waffle irons
+product	 236	faucet water heaters
+product	 237	garbage disposers
+product	 238	dry heat irons
+product	 239	steam irons
+product	 240	electric knife sharpeners
+product	 241	rotisseries
+product	 242	electric immersion water heaters
+product	 247	irons, not specified
+product	 250	range or oven accessories
+product	 252	trash compactors
+product	 255	clothes steamers
+product	 257	counter-mounted cooking surfaces, not specified
+product	 259	electric ranges (with ovens)
+product	 260	gas ranges (with ovens)
+product	 261	electric ovens
+product	 262	gas ovens
+product	 263	freezers (separate from refrigerators)
+product	 264	microwave ovens
+product	 265	other ovens
+product	 266	ovens, not specified
+product	 267	other ranges (with ovens)
+product	 268	slow cookers
+product	 269	electric kettles or hot pots
+product	 270	ice crushers
+product	 271	juicers
+product	 273	ranges, not specified
+product	 274	ice cream makers
+product	 275	food processors
+product	 276	refrigerators
+product	 277	clothing irons
+product	 278	electric ranges or ovens (excl counter-t
+product	 279	gas ranges or ovens                     
+product	 280	other ranges or ovens                   
+product	 281	ranges or ovens, not specified          
+product	 304	humidifiers
+product	 305	vaporizers
+product	 306	dehumidifiers
+product	 307	air purifiers
+product	 308	boilers
+product	 309	coal furnaces
+product	 310	gas furnaces
+product	 311	oil furnaces
+product	 312	electric baseboard heaters
+product	 316	wood burning fireplaces, factory built
+product	 318	electric furnaces
+product	 322	furnaces, not specified
+product	 334	gas-burning fireplaces, factory built
+product	 336	built-in fireplaces
+product	 340	thermostats (for heating or cooling systems)
+product	 342	fireplaces, not specified
+product	 346	electric fireplaces, factory built
+product	 348	portable electric heaters
+product	 365	heat pumps
+product	 366	catalytic heaters
+product	 367	coal or wood-burning stoves
+product	 368	gasoline heaters (noncatalytic)
+product	 369	other heaters or heating systems
+product	 370	heaters or heating systems, not specified
+product	 371	ductwork for heating or cooling systems
+product	 372	brick, stone or masonry chimneys
+product	 373	metal chimneys, stovepipes or flues
+product	 374	pipes (excluding smoking pipes)
+product	 378	chimneys, not specified
+product	 379	radiators (excluding vehicle radiators)
+product	 380	fans
+product	 381	air conditioners
+product	 384	floor furnaces (built into floor)
+product	 386	gas or lp floor or wall heaters
+product	 388	electric heaters, not elsewhere classified
+product	 389	gas or lp heaters, not elsewhere classified
+product	 390	heat tapes, electric
+product	 391	portable gas or lp heaters              
+product	 392	gas or lp heaters, other or not spec    
+product	 393	heaters or heating systems, other/n.s.  
+product	 394	outdoor patio heaters or firepits (manuf
+product	 399	kerosene or oil heaters
+product	 401	nonelectric can openers
+product	 405	unpowered coffee makers or teapots
+product	 408	ironing boards or covers
+product	 412	pressure cookers or canners
+product	 413	waste containers, trash baskets or refuse bins
+product	 416	corkscrews
+product	 417	flatware (excl. knives)
+product	 419	tie racks, belt racks or other clothes hangers
+product	 420	manual scissors
+product	 421	nonelectric knife sharpeners
+product	 422	bottle openers
+product	 424	glass drinking glasses                  
+product	 427	ice picks
+product	 428	kitchen gadgets, not elsewhere classified
+product	 429	food skewers
+product	 431	toothpicks or hors doeuvres picks
+product	 432	trays (excl. food warmers)
+product	 434	doorstops
+product	 435	kitchen mixing bowls, canisters or similar containers
+product	 436	potholders, oven mitts or hot pads
+product	 438	laundry baskets
+product	 443	rinking straws
+product	 444	knife sharpeners, not specified
+product	 450	scissors, not specified
+product	 452	coffee makers or teapots, not specified
+product	 453	can openers, not specified
+product	 454	nonglass drinking glasses               
+product	 459	manual cleaning equipment               
+product	 460	metal cookware (nonelectric)
+product	 461	nonmetal cookware (nonelectric)
+product	 462	chafing dishes or fondue pots
+product	 463	candles, candlesticks and other candle holders
+product	 464	knives, not elsewhere classified
+product	 465	other cookware
+product	 466	cookware, not specified
+product	 469	slicers and choppers
+product	 471	food grinders
+product	 474	tableware and accessories
+product	 475	drinking glasses, not specified        
+product	 477	thermometers (excluding medical thermometers)
+product	 478	drinking glasses
+product	 480	manual cleaning equipment (excl. buckets and pails)
+product	 481	bread making machines
+product	 482	appliances, other and not specified
+product	 514	ceramics supplies or equipment
+product	 519	television tables or stands
+product	 529	telescopes, binoculars, microscopes, magnifying glasses
+product	 530	phonograph records
+product	 531	recording tapes
+product	 532	glass bottle cutting equipment
+product	 533	lapidary equipment
+product	 536	photographic equipment
+product	 545	amateur two-way radios
+product	 546	stereo or hi-fi components or accessories
+product	 547	sound recording or receiving equipment, not specified
+product	 549	projectors
+product	 550	telephones or telephone accessories
+product	 552	antennas, not specified
+product	 555	radios (self-contained units)
+product	 556	tape recorders or players (self-contained units)
+product	 557	computers (equipment and electronic games)
+product	 558	indoor antennas (separate)
+product	 559	radios, not specified
+product	 561	outdoor antennas (separate)
+product	 562	laser pointers
+product	 563	record players (self-contained units)
+product	 564	art supplies or equipment
+product	 565	musical instruments, electric or battery operated
+product	 566	musical instrmnts, not elect. or battery or not spec.
+product	 567	coaxial cable
+product	 569	art or ceramics supplies and equipment (excl. paintbrushes)
+product	 570	musical instruments                     
+product	 571	business and office machines
+product	 572	televisions
+product	 573	other sound recording, reproducing or receiving equip.
+product	 574	remote control, universal or ns (excl. remotes for toys)
+product	 601	bedsprings or bedframes
+product	 604	desks, chests, bureaus or buffets
+product	 606	generators or power plants
+product	 609	glass bathtub or shower enclosures
+product	 610	nonglass bathtub or shower enclosures
+product	 611	bathtubs or showers
+product	 612	runners, throw rugs or doormats
+product	 613	room-sized, wall-to-wall or outdoor carpeting
+product	 617	draperies, curtains, shower curtains(fabric or plastic)
+product	 618	stepladders
+product	 619	straight ladders
+product	 620	step stools
+product	 623	butane or lp gas meters
+product	 627	light bulbs
+product	 628	electric chandeliers or other attached light fixtures
+product	 638	window shades, venetian blinds or indoor shutters
+product	 639	flashlights or battery-powered lanterns
+product	 648	sinks
+product	 649	toilets
+product	 650	slipcovers
+product	 651	table linens
+product	 652	pictures, picture frames or wall decorations
+product	 653	artificial flowers or plants
+product	 654	knickknacks, statues, vases or urns
+product	 657	towel racks or bars
+product	 661	bunk beds
+product	 662	waterbeds or water pillows
+product	 663	fireplace equipment
+product	 666	towels or cloths
+product	 667	bedspreads, throws or comforters
+product	 669	clothespins
+product	 670	recliner chair                          
+product	 671	rocking chair                           
+product	 672	laundry hampers
+product	 676	rugs or carpets, not specified
+product	 679	sofas, couches, davenports, divans or studio couches
+product	 680	convertible beds, hideaway beds or sofa beds
+product	 684	unattached appliance or lamp cords
+product	 685	extension cords
+product	 687	benches
+product	 688	extension ladders
+product	 689	blankets, not specified
+product	 692	magazine racks or book ends
+product	 693	footlockers
+product	 694	beds, not specified
+product	 698	whirlpools, hot tubs or home spas
+product	 699	faucets or spigots
+product	 701	fire extinguishers
+product	 702	fire or smoke alarms
+product	 704	burglar alarms
+product	 706	lightning rods, arresters or other grounding devices
+product	 707	padlocks, chain locks or other locks
+product	 709	safes
+product	 710	electric timers
+product	 711	fire escape devices
+product	 712	carbon monoxide detectors
+product	 713	fire sprinklers
+product	 803	power sanders
+product	 804	power routers
+product	 805	power lathes
+product	 807	power jointers
+product	 808	power shapers
+product	 809	other portable or stationary power tools
+product	 812	electric welding equipment
+product	 814	hoists, lifts, jacks or jack stands
+product	 815	electrical testing equipment
+product	 819	electric motors (separate)
+product	 820	internal combustion engines (nonvehicular)
+product	 821	automotive tools or accessories
+product	 822	paint sprayers                          
+product	 823	air compressors (separate)
+product	 827	hammers
+product	 828	screwdrivers
+product	 829	manual drills
+product	 830	hand saws
+product	 831	fuel-burning welding equipment
+product	 832	portable circular power saws
+product	 833	workshop compounds or chemicals
+product	 834	heavy-duty workshop staplers
+product	 835	toolboxes or tool kits
+product	 836	knives with replaceable blades
+product	 837	wire, not specified
+product	 841	bench or table saws
+product	 842	band saws
+product	 843	radial arm saws
+product	 844	power hack saws
+product	 845	saws, not specified
+product	 847	drills, not specified
+product	 852	rope or string
+product	 854	workshop furnishings
+product	 855	portable power drills and accessories
+product	 856	stationary power drills and accessories
+product	 857	pliers, wire cutters or wrenches
+product	 858	reamers
+product	 859	soldering equipment, not specified
+product	 862	manual filing or sanding tools
+product	 863	other power saws
+product	 864	sabre saws
+product	 865	portable power workshop grinders, buffers, polishers
+product	 866	electric soldering equipment
+product	 867	welding equipment, not specified
+product	 868	nonelectric soldering equipment
+product	 869	glue guns
+product	 870	awls, chisels or planes
+product	 871	power drills or accessories, not specified
+product	 872	power saws, not specified
+product	 873	stationary power workshop grinders, buffers, polishers
+product	 874	cutting torches
+product	 875	jigsaws
+product	 876	power workshop grinders, buffers, polishers, n.s.
+product	 877	trouble lights or extension work lights
+product	 878	levels
+product	 879	vises or workshop clamps
+product	 880	drain snakes
+product	 881	other manual workshop tools
+product	 882	nail guns or stud drivers
+product	 883	battery chargers
+product	 884	batteries
+product	 885	chains, not elsewhere classified
+product	 886	stretch cords or straps
+product	 887	painting equip., powered (sprayers, rollers, brushes)
+product	 888	sprayers, not elsewhere classified
+product	 889	batteries, motor vehicle                
+product	 890	torches, not specified
+product	 891	batteries, not specified                
+product	 892	batteries, non-motor vehicle            
+product	 893	tools, not specified
+product	 894	hacksaws                                
+product	 895	power saws, other or not specified      
+product	 896	welding equipment                       
+product	 897	power workshop grinders, buffers or poli
+product	 898	manual workshop grinders, buffers or pol
+product	 899	workshop grinders, buffers or polishers,
+product	 904	floor waxes
+product	 905	furniture polishes or waxes
+product	 908	paint or varnish thinners
+product	 909	adhesives
+product	 910	gasoline
+product	 913	lubricants
+product	 914	dry ice
+product	 915	methyl alcohol (solvent)
+product	 917	charcoal
+product	 920	caulking or spackling compounds
+product	 921	chemicals, not elsewhere classified
+product	 925	paintbrushes or rollers, manual
+product	 926	photographic chemicals
+product	 927	tapes (with adhesive surfaces)
+product	 929	drain cleaners
+product	 930	ammonia, household
+product	 931	metal polishes, tarnish removers or preventatives
+product	 932	shoe polishes
+product	 933	turpentine
+product	 934	dishwasher detergents
+product	 936	acids
+product	 937	rust removers
+product	 938	swimming pool chemicals
+product	 940	lighter fluids
+product	 941	fuels for chafing dishes or fondue pots
+product	 942	oven cleaners
+product	 945	pine oil cleaning and disinfectant preparations
+product	 949	laundry soaps or detergents
+product	 951	toilet bowl products
+product	 952	fabric treatment products
+product	 953	abrasive cleaners
+product	 954	general purpose household cleaners
+product	 955	automotive chemicals
+product	 956	bleaches (noncosmetic)
+product	 957	dyes (noncosmetic)
+product	 958	other polishes
+product	 959	polishes, not specified
+product	 960	paints, varnishes or shellacs
+product	 961	rust preventatives
+product	 962	diesel fuels
+product	 963	kerosene
+product	 964	lamp oils
+product	 965	fuel oils, not specified
+product	 966	antifreeze
+product	 967	windshield wiper fluids
+product	 968	caustics
+product	 969	lye
+product	 970	wallpaper cleaners (chemical)
+product	 971	wallpaper steamers
+product	 972	paint or varnish removers, paintbrush cleaners
+product	 973	liquid room deodorizers or fresheners
+product	 974	solid room deodorizers or fresheners
+product	 975	room deodorizers or fresheners, not specified
+product	 976	detergents, not specified
+product	 977	spot removers or cleaning fluids
+product	 978	automotive waxes, polishes or cleaners
+product	 979	dishwashing liquid
+product	 980	fuel storage tanks
+product	 981	gasoline cans
+product	 982	school laboratory chemicals
+product	 983	soaps (excl. laundry soaps or detergents)
+product	 984	solvents, other or not specified
+product	1023	fertilizers, not specified
+product	1053	fertilizers and other chemicals for outdoor use
+product	1062	tractors, other or not specified, n.o.s.
+product	1102	vacuum containers
+product	1103	self-contained openers
+product	1107	other containers
+product	1112	metal containers
+product	1114	cardboard products
+product	1116	containers with key openers
+product	1120	glass soft drink bottles
+product	1122	glass alcoholic beverage bottles
+product	1123	plastic containers (rigid or semi-rigid)
+product	1124	glass tubing or test tubes
+product	1125	wooden containers
+product	1127	nonglass bottles or jars
+product	1128	paper bags
+product	1130	plastic bags
+product	1131	plastic wrapping products
+product	1132	plastic products, not specified
+product	1133	aerosol containers
+product	1134	other glass bottles or jars
+product	1135	bottles or jars, not specified
+product	1136	canning jars or lids
+product	1137	paper products
+product	1138	pressurized containers (nonaerosol)
+product	1139	aluminum foil wrapping products
+product	1140	glass bottles or jars, not specified
+product	1141	containers, not specified
+product	1142	bags (excluding paper or plastic bags)  
+product	1143	buckets or pails
+product	1144	bags, not elsewhere classified
+product	1145	other specified plastic products        
+product	1200	sports and recreational activity, n.e.c.
+product	1202	bicycles or accessories                 
+product	1205	basketball, activity and related equipment
+product	1206	bowling (activity, apparel or equipment)
+product	1207	boxing (activity, apparel or equipment)
+product	1208	croquet (activity, apparel or equipment)
+product	1211	football (activity, apparel or equipment)
+product	1212	golf (activity, apparel or equipment)
+product	1213	golf carts
+product	1215	lacrosse (activity, apparel or equipment)
+product	1217	sleds
+product	1232	electric charcoal lighters              
+product	1233	trampolines
+product	1234	treehouses or playhouses
+product	1235	archery (activity, apparel or equipment)
+product	1237	gas, air or spring-operated guns
+product	1239	horseback riding (activity, apparel or equipment)
+product	1240	aquariums or accessories
+product	1242	slides or sliding boards
+product	1243	see-saws or teeter boards
+product	1244	monkey bars or other playground climbing apparatus
+product	1246	wading pools
+product	1247	fuel charcoal lighters                  
+product	1255	alcohol-fueled heaters
+product	1257	horseshoes (activity, apparel or equipment)
+product	1258	mountain climbing (activity, apparel or equipment)
+product	1260	billiards or pool (activity, apparel or equipment)
+product	1261	surfing (activity, apparel or equipment)
+product	1264	water skiing (activity, apparel or equipment)
+product	1266	volleyball (activity, apparel or equipment)
+product	1267	soccer (activity, apparel or equipment)
+product	1268	track and field (activity, apparel or eq
+product	1269	table tennis (activity, apparel or equipment)
+product	1270	wrestling (activity, apparel or equipment)
+product	1271	batons
+product	1272	gymnastics and associated equipment
+product	1273	toboggans
+product	1274	snow disks
+product	1275	scuba diving (activity, apparel or equipment)
+product	1276	tetherball (activity, apparel or equipment)
+product	1277	swimming pool slides
+product	1278	diving or diving boards
+product	1279	ice hockey (activity, apparel or equipment)
+product	1282	handball (activity, apparel or equipment)
+product	1283	unicycles
+product	1284	swimming pools, not specified
+product	1285	charcoal lighters, not specified        
+product	1290	snowmobiles (activity, apparel or equipment)
+product	1293	amusement attractions (including rides)
+product	1294	bleachers
+product	1295	field hockey (activity, apparel or equipment)
+product	1299	snow tubing (activity, apparel or equipment)
+product	1301	tricycles
+product	1306	gasoline- or other fuel-powered models
+product	1309	kites or kite string
+product	1310	pogo sticks
+product	1313	fireworks
+product	1314	rocketry sets
+product	1317	flying toys
+product	1318	unpowered models or parts
+product	1319	metal or plastic molding sets
+product	1322	childrens play tents, play tunnels or other enclosures
+product	1325	inflatable toys
+product	1326	blocks, stacking toys or pull toys
+product	1327	nonwheeled riding toys, unpowered
+product	1328	wagons (childrens)
+product	1329	scooters, unpowered
+product	1330	powered riding toys
+product	1332	electric trains or accessories
+product	1333	skateboards
+product	1334	electric toy ovens
+product	1335	electric toy irons
+product	1338	toy bows or arrows
+product	1342	costumes or masks
+product	1344	toy musical instruments
+product	1345	building sets
+product	1346	clacker balls
+product	1347	balloons (toy)
+product	1349	stilts
+product	1350	squeeze or squeaker toys
+product	1352	slingshots or sling-propelled toys
+product	1353	toy boxes or chests
+product	1354	marbles
+product	1356	engine fuels for models
+product	1362	woodburning kits
+product	1365	water toys
+product	1376	molding compounds
+product	1381	toys, not elsewhere classified
+product	1383	electric toy racing cars or accessories
+product	1389	other toy weapons (nonprojectile)
+product	1390	toy guns, not specified
+product	1392	toy sports equipment
+product	1393	chemistry sets or science kits
+product	1394	dolls, plush toys, and action figures
+product	1395	toys, not specified
+product	1398	wheeled riding toys, unpowered
+product	1399	toy guns with projectiles
+product	1401	power lawn mowers, not specified
+product	1402	hand lawn mowers
+product	1403	other unpowered garden tools
+product	1404	power lawn trimmers or edgers           
+product	1405	garden tractors
+product	1406	snow throwers, blowers                  
+product	1407	garden sprayers
+product	1408	power tillers or cultivators
+product	1409	other power garden tools
+product	1411	chain saws
+product	1413	greenhouse or gardening supplies
+product	1414	garden hoses, nozzles or sprinklers
+product	1415	manual snow or ice removal tools
+product	1417	decorative yard equipment
+product	1422	riding power lawn mowers
+product	1425	wheelbarrows or lawn carts
+product	1426	hatchets or axes
+product	1427	power hedge trimmers
+product	1430	seed and fertilizer spreaders
+product	1431	grass and leaf catchers (attachments for lawn mowers)
+product	1432	animal traps
+product	1433	power leaf mulchers and grinders
+product	1434	snow throwers or blowers (attachments for lawn mowers)
+product	1435	snow plows
+product	1439	lawn mowers, not specified
+product	1441	lawn vacuums
+product	1445	plant foods or fertilizers for potted plants
+product	1446	reel power lawn mowers
+product	1447	pruning or trimming equipment, not specified
+product	1448	rotary power lawn mowers
+product	1449	manual hedge trimmers
+product	1450	manual lawn trimmers or edgers
+product	1451	seeds                                   
+product	1452	outdoor electric lighting equipment
+product	1453	other manual pruning or trimming equipment
+product	1454	other power pruning or trimming equipment
+product	1455	manual pruning or trimming equipment, not specified
+product	1456	power pruning or trimming equipment, not specified
+product	1457	log splitters
+product	1458	snow throwers or blowers (self-contained units)
+product	1459	snow throwers or blowers, not specified
+product	1460	electric insect traps
+product	1461	leaf blowers
+product	1462	pumps, not elsewhere classified
+product	1463	brushcutters, powered
+product	1464	lawn trimmers or edgers, powered (excl. brushcutters)
+product	1465	decorative yard equipment, excl water features
+product	1466	decorative water features, incl man-made ponds & fountains
+product	1502	baby changing tables
+product	1505	baby carriages
+product	1506	baby gates or barriers
+product	1508	baby walkers or jumpers
+product	1509	baby bottles or nipples
+product	1510	bottle warmers
+product	1511	sterilizers (home use)
+product	1512	diapers
+product	1513	playpens
+product	1515	baby scales
+product	1517	baby rattles
+product	1518	youth chairs
+product	1519	car seats (for infants or children)
+product	1520	baby exercisers
+product	1522	baby strollers
+product	1524	baby harnesses
+product	1525	pacifiers or teething rings
+product	1526	crib mobiles or crib gyms
+product	1527	baby carriers or slings (backpacks)
+product	1528	diaper pails
+product	1529	portable cribs
+product	1531	baby carriers (bicycle-mounted)
+product	1533	night-lights
+product	1534	car beds for infants
+product	1535	potty chairs or training seats
+product	1536	crib extender rails or youth bed rails
+product	1537	bassinets or cradles
+product	1539	shoelace fasteners (for infants)
+product	1542	baby mattresses or pads
+product	1543	cribs
+product	1544	baby baths or bathinettes
+product	1545	cribs, not specified
+product	1548	baby carriers, not specified
+product	1549	other baby carriers
+product	1550	infant & toddler play ctrs, excl jumpers,bouncers&exercisers
+product	1551	diaper fasteners
+product	1553	portable baby swings (for home use)
+product	1554	safety pins
+product	1555	high chairs
+product	1556	attached highchair
+product	1557	baby bathtub seats for rings (not toys)
+product	1558	baby bouncer seats (excl. jumpers)
+product	1602	hair dryers
+product	1604	cigarette or pipe lighters
+product	1605	wigs, falls or hairpieces
+product	1606	eyeglasses
+product	1607	eye protection devices
+product	1608	powered toothbrushes or oral irrigators
+product	1609	sun lamps
+product	1610	massage devices or vibrators
+product	1612	saunas
+product	1613	electric shoe polishers
+product	1615	footwear
+product	1616	jewelry
+product	1617	ear protection devices
+product	1618	respiratory protection devices
+product	1619	personal protection devices
+product	1620	hearing aids
+product	1622	watches
+product	1623	luggage
+product	1624	contact lenses
+product	1625	lighted make-up mirrors
+product	1629	nonelectric toothbrushes
+product	1630	paper money or coins                    
+product	1634	heat or infrared lamps
+product	1637	electric combs
+product	1638	combs or hairbrushes, unpowered
+product	1641	clothesbrushes
+product	1643	keys, key rings or key chains
+product	1644	nightwear
+product	1645	day wear
+product	1646	outerwear
+product	1647	clothing accessories
+product	1650	desk supplies
+product	1651	combs, not specified
+product	1654	paper cutters
+product	1658	clothing, not specified
+product	1659	manicuring devices
+product	1660	umbrellas
+product	1661	nonelectric razors or shavers
+product	1662	hair grooming equipment or accessories, n.s.
+product	1664	electric razors or shavers
+product	1667	razors or shavers, not specified
+product	1669	pins and needles
+product	1671	sewing basket articles
+product	1677	other clothing
+product	1678	bath or facial brushes
+product	1679	grocery or shopping carts
+product	1680	dollies, handtrucks or luggage carriers
+product	1682	hair curlers, curling irons, clips & hairpins
+product	1683	hair clippers and trimmers
+product	1684	carts, other or not specified
+product	1685	pens and pencils
+product	1686	coins
+product	1687	lighters, not specified
+product	1688	fuel multi-purpose lighters, incl. micro-torches
+product	1689	electric multi-purpose lighters
+product	1690	multi-purpose lighters, not specified
+product	1701	artificial christmas trees
+product	1705	ashtrays                                
+product	1706	crutches, canes or walkers
+product	1707	wheelchairs
+product	1710	first aid equipment
+product	1711	christmas tree lights
+product	1712	christmas tree stands or supports
+product	1714	seasonal decorations
+product	1715	pet supplies
+product	1716	hypodermic needles or syringes
+product	1718	flares
+product	1719	lunch boxes or pails
+product	1720	party favors
+product	1725	cathode-ray tubes                       
+product	1726	lockers
+product	1728	matchbooks
+product	1729	christmas decorations (nonelectric)
+product	1730	wooden matches
+product	1731	matches, not specified
+product	1732	tombstones or grave markers
+product	1733	vending machines
+product	1734	music boxes or chimes
+product	1735	coin-operated car-washing equipment
+product	1736	electric christmas decorations (excl. tree lights)
+product	1737	houseplants                             
+product	1738	public use items, not elsewhere classified
+product	1739	ashtrays, electric or battery operated
+product	1740	ashtrays, not elec. or battery or not specified
+product	1741	tarpaulins
+product	1742	heating or cooling comfort packs (nonelectric)
+product	1744	motorized vehicles, nec (3 or more whls)
+product	1803	thermal or sound insulation materials
+product	1807	floors or flooring materials
+product	1808	outdoor awnings or shutters
+product	1811	bricks or concrete blocks (not part of s
+product	1812	gutters, drainpipes, downspouts or run-off pipes
+product	1814	elevators or other lifts                
+product	1816	scaffolding
+product	1817	porches, balconies, open-side floors or floor openings
+product	1818	cisterns, cesspools or septic tanks
+product	1819	nails, screws, carpet tacks or thumbtacks
+product	1820	cabinet or door hardware
+product	1821	clotheslines or clothes drying racks
+product	1823	storm doors with glass panels
+product	1825	sliding glass doors or panels
+product	1826	storm windows
+product	1827	screen doors
+product	1828	window screens
+product	1829	handrails, railings or banisters
+product	1830	separate garages or tool sheds          
+product	1836	jalousie glass windows
+product	1840	pull-down or folding stairs
+product	1841	mobile homes
+product	1842	stairs or steps
+product	1843	ramps or landings
+product	1845	panel doors (flush or slab)
+product	1849	doors, not specified
+product	1854	plastic panels for doors or windows
+product	1855	plastic products, not elsewhere classified
+product	1857	artificial turf
+product	1858	storm doors without glass panels
+product	1863	wallpaper
+product	1864	counters or countertops
+product	1865	poles
+product	1866	general home or room involvement in fires
+product	1867	fixed floor-length glass panels
+product	1870	window sills or frames
+product	1871	fences or fence posts
+product	1873	windows or window glass, not specified
+product	1875	other windows or window glass
+product	1876	house structures, repair or construction materials,nec
+product	1878	door sills or frames
+product	1879	other nonglass doors (nongarage)
+product	1880	nonglass doors (nongarage), not specified
+product	1882	other glass doors
+product	1883	glass doors, not specified
+product	1884	ceilings and walls (part of completed structure)
+product	1885	wood paneling and particleboard
+product	1886	garage doors (excl. automatic garage doors or openers)
+product	1887	tool sheds
+product	1888	window or door security barriers
+product	1889	elevators or other lifts (excl.escalators, hoists, jac
+product	1890	escalators
+product	1891	moving walks
+product	1892	glass doors or doors w/glass panels     
+product	1893	doors, other or not specified           
+product	1894	windows & window glass, excl storm windo
+product	1895	tree stands (hunting)                   
+product	1898	gas fumes or vapors of unknown origin   
+product	1899	carbon monoxide poisonings (when source is uknown)
+product	1909	cigarettes, cigars, pipes or tobacco
+product	1913	cosmetics, incl facial & eye make-up, deodorants, etc.
+product	1914	veterinary medicines
+product	1915	liniments or rubbing compounds
+product	1916	preparations containing iron salts
+product	1923	aspirin or aspirin compounds
+product	1926	pesticides
+product	1927	liquid drugs
+product	1928	antihistamines
+product	1929	drugs or medications, not specified
+product	1930	aspirin substitutes
+product	1931	tablet or capsule drugs
+product	1932	other drugs or medications
+product	1934	hot water
+product	1936	bbs or pellets
+product	1940	mouthwashes/mouth rinses (excl peroxide)
+product	2300	school equipment
+product	2440	support garments and stockings, medical
+product	2640	oral hygiene products
+product	2680	soaps                                   
+product	3200	water tubing (activity, apparel or equipment)
+product	3202	pedal-powered adult vehicles (three or more wheels)
+product	3203	skeet shooting (activity, apparel or equipment)
+product	3211	water slides                            
+product	3214	camping equipment                       
+product	3215	mopeds or power-assisted cycles
+product	3216	roller skating (activity, apparel or equipment)
+product	3217	skating (activity, apparel or equipment) not specified
+product	3218	charcoal or wood-burning grills
+product	3219	other playground equipment
+product	3220	volleyball (activity, apparel or equipme
+product	3221	above-ground swimming pools
+product	3222	badminton (activity, apparel or equipment)
+product	3223	fishing (activity, apparel or equipment)
+product	3225	organized soccer (activity, apparel or e
+product	3226	basketball (activity, apparel or equipme
+product	3227	informal football (activity, apparel or 
+product	3228	organized baseball (activity, apparel or
+product	3229	electric grills
+product	3230	kerosene grills or stoves
+product	3231	gymnastics (activity, apparel or equipme
+product	3233	other grills or stoves
+product	3234	rugby (activity, apparel or equipment)
+product	3235	other ball sports (activity, apparel or equipment)
+product	3236	ball sports (activity, apparel or equipment), n.s.
+product	3237	organized gymnastics (activity, apparel 
+product	3240	informal baseball (activity, apparel or 
+product	3241	informal soccer (activity, apparel or eq
+product	3242	organized basketball (activity, apparel 
+product	3243	organized volleyball (activity, apparel 
+product	3244	football (activity, apparel or equipment
+product	3245	street hockey (activity, apparel or equipment)
+product	3246	swings or swing sets
+product	3247	ice or snow boating (activity, apparel or equipment)
+product	3248	gas or lp grills or stoves
+product	3249	grills, not specified
+product	3250	portable food or beverage coolers
+product	3251	built-in swimming pools
+product	3252	sleeping bags
+product	3254	cheerleading (activity, apparel or equipment)
+product	3255	ice skating (activity, apparel or equipment)
+product	3256	squash, racquet ball or paddle ball
+product	3257	martial arts (activity, apparel or equipment)
+product	3258	minibikes or trail bikes                
+product	3259	go-carts
+product	3260	fencing (activity, apparel or equipment)
+product	3261	shuffleboard (activity, apparel or equipment)
+product	3262	swimming pool equipment
+product	3263	informal gymnastics (activity, apparel o
+product	3265	weight lifting (activity, apparel or equipment)
+product	3267	informal basketball (activity, apparel o
+product	3268	informal volleyball (activity, apparel o
+product	3269	organized football (activity, apparel or
+product	3270	baseball (activity, apparel or equip.), 
+product	3271	soccer (activity, apparel or equipment),
+product	3272	hockey (activity, apparel or equipment), not specified
+product	3273	playground equipment, not specified
+product	3274	swimming (activity, apparel or equipment)
+product	3276	water polo (activity, apparel or equipment)
+product	3277	exercise equipment
+product	3278	dancing (activity, apparel or equipment)
+product	3279	flotation devices
+product	3282	curling (activity, apparel or equipment)
+product	3283	snow skiing (activity, apparel or equipment)
+product	3284	tennis (activity, apparel or equipment)
+product	3285	all terrain vehicles (three wheels/off-road only)
+product	3286	all terrain vehicles (four wheels/off road only)
+product	3287	all terrain vehicles (# of wheels unspecified/off road)
+product	3288	dune buggies/beach buggies
+product	3289	darts, for indoor use (activity or equipment)
+product	3290	darts, lawn (activity or equipment)
+product	3291	darts, not otherwise specified (n.o.s.)
+product	3293	water slides, not elsewhere classified
+product	3294	water slides, backyard/home (not swimming pool slides)
+product	3295	water slides, public (stationary amusement rides)
+product	3296	all terr. veh. (more than 4 wheels; exclusively off-rd.
+product	3297	in-line skating (activity, apparel or equipment)
+product	3299	exercise (activity or apparel, w/o equip)
+product	4002	bedding, not specified
+product	4003	stools, not specified
+product	4004	mirrors or mirror glass
+product	4005	filters
+product	4008	nonelectric blankets
+product	4009	nonbaby mattresses
+product	4010	mattresses, not specified
+product	4011	inflatable furniture
+product	4013	other furniture
+product	4014	furniture, not specified
+product	4015	upholstered footstools, ottomans or hassocks
+product	4016	beach chairs or folding chairs
+product	4017	nonupholstered recliner chairs
+product	4018	nonupholstered rocking chairs
+product	4019	upholstered recliner chairs
+product	4020	upholstered rocking chairs
+product	4021	other chairs
+product	4022	chairs, not specified
+product	4023	recliner chairs, not specified
+product	4024	rocking chairs, not specified
+product	4025	barstools or kitchen stools
+product	4026	other stools
+product	4030	bathtub or shower enclosures, not specified
+product	4032	other ladders
+product	4033	ladders, not specified
+product	4036	electric table lamps, floor lamps or des
+product	4039	other electric lighting equipment
+product	4041	electric lighting equipment, not specified
+product	4042	lighting equipment, not specified
+product	4043	clocks                                  
+product	4045	fabrics (not part of finished item)
+product	4047	books, magazines, albums or scrapbooks
+product	4050	pillows
+product	4051	sheets or pillowcases
+product	4052	other upholstered chairs
+product	4053	upholstered chairs, not specified
+product	4054	other bedding
+product	4055	drapery or curtain rods, hooks or rings
+product	4056	cabinets, racks, room dividers and shelves, nec
+product	4057	tables (excl.  baby changing tables, billiard or pool tables
+product	4058	bars and bar accessories, not elsewhere classified
+product	4059	scales  (excl. baby scales)             
+product	4060	fuel-burning lighting equipment
+product	4061	electric outlets or receptacles
+product	4062	electric wire or wiring systems (excl panelboards recept
+product	4063	panelboards, circuit breakers, gfcis, or fuses
+product	4064	futons
+product	4065	clocks, electric or battery operated
+product	4066	scales, electric/battery operated (exclud. baby scales)
+product	4067	clocks, not elec. or battery or not specified
+product	4068	scales, not elec. or battery or not specified
+product	4069	cots
+product	4070	floor lamps or table lamps, halogen
+product	4071	floor lamps or table lamps, electric (excl halogen)
+product	4072	bedsprings or bedframes excl bunk beds &
+product	4073	adult bed rails                         
+product	4074	chairs, other or not specified          
+product	4075	bed rails                               
+product	4076	beds or bedframes, other or not spec    
+product	4077	extension or straight ladders           
+product	4078	ladders, other or not specified        
+product	4079	footstools, ottomans or hassocks       
+product	4080	stools, other or not specified         
+product	4081	cords, electrical, other or not spec   
+product	4082	toddler beds                           
+product	4083	surge suppressors or power strips
+product	4084	residential alternative energy sys for on-site power gen
+product	4802	straps, non-stretch, other, or not specified
+product	5001	other toy weapons (projectile)
+product	5004	toys, not elsewhere classified
+product	5005	riding toys, not specified
+product	5006	other toy guns
+product	5007	toy weapons, not specified
+product	5010	crayons or chalk
+product	5011	book bags or back carriers (exc. baby carr. luggage, cam
+product	5013	toy make-up kits or cosmetics
+product	5015	toy caps, cap toys or cap guns
+product	5016	balls, other or not specified
+product	5017	flying discs and boomerangs
+product	5018	doll houses and other play scenes
+product	5019	games or game parts (excl marbles & computer games)
+product	5020	pretend electronics, tools, housewares & appliances
+product	5021	toy vehicles (excluding riding toys)
+product	5029	camping equipment(excl. trailers,lighting equip.,sleepin
+product	5030	track & field (act., apparel, eqp.; ex.  jog, run fit)
+product	5031	snowboarding (activity, apparel or equipment)
+product	5032	roller hockey (activity, apparel or equipment)
+product	5033	mountain or all-terrain bicycles and accessories
+product	5034	softball (activity, apparel or equipment)
+product	5035	minibikes, powered
+product	5036	two-wheeled, powered, off-road vehicles (incl. dirt bike
+product	5037	hammocks
+product	5040	bicycles and accessories, (excl.mountain or all-terrain)
+product	5041	baseball (activity, apparel or equipment; excl softball)
+product	5042	scooters / skateboards, powered
+product	5043	portable swimming pools
+product	5044	utility vehicles 
+product	5555	< 5 poisonings - no other code

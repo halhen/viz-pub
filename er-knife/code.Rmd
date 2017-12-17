@@ -1,0 +1,240 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+
+
+A bunch of code to read the NEISS files are in the chunk below. If you're happy using less data, there is [an R package with five years of data}(https://github.com/hadley/neiss) easily available.
+
+
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(stringr)
+
+
+# Generated from the SAS codebook file
+df.codes <- read_tsv('codes.tsv')
+
+
+# Download yearly data from the NEISS query builder https://www.cpsc.gov/cgibin/NEISSQuery/home.aspx as tab separated files
+# See the sample file for example
+df <- tibble(filename = list.files('.', 'nss.*.tsv', full.names = TRUE)) %>%
+  mutate(data = map(filename, read_tsv, quote="¤")) %>%
+  unnest(data) %>%
+  select(-filename) %>%
+  mutate(trmt_date = lubridate::mdy(trmt_date),
+         year = lubridate::year(trmt_date),
+         month = lubridate::month(trmt_date),
+         wday = lubridate::wday(trmt_date),
+         yday = lubridate::yday(trmt_date),
+         norm_date = lubridate::ymd(paste0('2012-', month, '-', lubridate::mday(trmt_date)))) %>%
+  
+  mutate(narrative = paste0(str_trim(coalesce(narr1, '')), ' ', str_trim(coalesce(narr2, ''))),
+         narrative = stringr::str_to_lower(narrative)) %>%
+  select(-narr1, -narr2) %>%
+  
+  left_join(df.codes %>%
+              filter(varname == 'bdypt') %>%
+              transmute(body_part=code, name = factor(name))) %>%
+  mutate(body_part = name) %>%
+  select(-name) %>%
+  
+  left_join(df.codes %>%
+              filter(varname == 'diag') %>%
+              transmute(diag=code, name = factor(name))) %>%
+  mutate(diag = name) %>%
+  select(-name) %>%
+  
+  left_join(df.codes %>%
+              filter(varname == 'disp') %>%
+              transmute(disposition=code, name = factor(name))) %>%
+  mutate(disposition = name) %>%
+  select(-name) %>%
+  
+  left_join(df.codes %>%
+              filter(varname == 'gender') %>%
+              transmute(sex=code, name = factor(name))) %>%
+  mutate(sex = name) %>%
+  select(-name) %>%
+  
+  left_join(df.codes %>%
+              filter(varname == 'race') %>%
+              transmute(race=code, name = factor(name))) %>%
+  mutate(race = name) %>%
+  select(-name) %>%
+  
+  left_join(df.codes %>%
+              filter(varname == 'locale') %>%
+              transmute(location=code, name = factor(name))) %>%
+  mutate(location = name) %>%
+  select(-name) %>%
+  
+  left_join(df.codes %>%
+              filter(varname == 'product') %>%
+              transmute(prod1=code, name = factor(name))) %>%
+  mutate(prod1 = name) %>%
+  select(-name) %>%
+  
+  left_join(df.codes %>%
+              filter(varname == 'product') %>%
+              transmute(prod2=code, name = factor(name))) %>%
+  mutate(prod2 = name) %>%
+  select(-name)
+
+
+df.tmp <- rbind(
+  df %>%
+    rename(product = prod1) %>%
+    select(-prod2),
+  df %>%
+    rename(product = prod2) %>%
+    select(-prod1)
+)
+  
+df <- df.tmp %>%
+  filter(!is.na(product)) %>%
+  rename(normdate = norm_date)
+
+1
+```
+
+
+
+Summarize by week
+
+```{r}
+df.tmp <- df %>%
+  group_by(product) %>%
+  filter(sum(weight) > 1000) %>%
+  filter(year >= 2000) %>%
+  group_by(product, year, week = week(trmt_date)) %>%
+  summarize(n = sum(weight) / n_distinct(trmt_date),
+            reports = n()) %>%
+  ungroup() %>%
+  complete(product, year, week, fill=list(n=0, reports = 0)) %>%
+  group_by(product, year) %>%
+  filter(any(n > 0)) %>%
+  ungroup()
+
+```
+
+
+... and clean up the categories. This snippet has been used in other applications too, and most of it is not needed to get the knife data.
+
+```{r}
+df.clean <- df.tmp %>%
+  mutate(product = as.character(product)) %>%
+  mutate(category = case_when(str_detect(product, 'activity') ~ 'activity')) %>%
+  mutate(product = case_when(str_detect(product, 'scissors') ~ 'scissors',
+                             str_detect(product, 'christmas') ~ 'christmas decorations',
+                             str_detect(product, 'toy') ~ 'toys',
+                             str_detect(product, 'knives') ~ 'knives',
+                             str_detect(product, '(ice )?hockey') ~ 'hockey',
+                             str_detect(product, 'swimming pools') ~ 'swimming pools',
+                             str_detect(product, 'playground') ~ 'playground equipment',
+                             TRUE ~ product),
+         product = str_replace(product, '[, ]*\\(.*', ''),
+         product = str_replace(product, '[, ]*nec', ''),
+         product = str_replace(product, '[, ]*excl .*', ''),
+         product = str_replace(product, '[, ]*activity.*', ''),
+         product = str_replace(product, '[, ]*and accessories', ''),
+         product = str_replace(product, ', *(other|not).*', ''),
+         product = str_replace(product, '[, ]*and associated equipment', ''),
+         product = str_replace(product, '[ ]*other ', ''),
+         product = case_when(product == 'sports and recreational' ~ 'sports and exercise',
+                             product == 'exercise' ~ 'sports and exercise',
+                             TRUE ~ product),
+         category = case_when(product == 'track & field' ~ 'activity',
+                              product == 'gymnastics' ~ 'activity',
+                              TRUE ~ category)) %>%
+  filter(product != '') %>%
+  group_by(product, category, year, week) %>%
+  summarize(n = sum(n))
+
+```
+
+
+
+
+```{r}
+df.clean %>%
+  ungroup() %>%
+  filter(product == 'knives') %>%
+  mutate(n.norm = (n - min(n)) / (1 + quantile(n, 0.99) - min(n)), 
+         n.norm = pmin(0.99999, n.norm),
+         n.norm = floor(n.norm * 5),
+         n.norm = n.norm/5 * quantile(n, 0.99) + min(n),
+         n.norm = factor(n.norm)) %>%
+  ggplot(aes(xmin=week, ymin=year + week/53, xmax= week + 1, ymax=year + 1 + (week + 1) / 53, fill=n.norm)) +
+    geom_segment(data = df.months %>%
+                   mutate(week = cum/7 + 1,
+                          week = ifelse(week >= 52, 1, week)),
+                 aes(x = week, xend = week, y = 2005, yend=2019), inherit.aes = FALSE, size=0.2, color="#666666") +
+    geom_rect(color='white', size=0.2) +
+    scale_y_continuous(limits=c(1995, NA)) +
+    coord_polar() +
+    scale_fill_brewer(palette='YlGn') +
+    theme_void()
+
+ggsave('/tmp/out.svg', width=8, height=5)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
