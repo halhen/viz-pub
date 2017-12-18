@@ -1,0 +1,155 @@
+---
+title: "Sentence Drawings in R"
+output: html_notebook
+---
+
+
+[Stephanie Posavec's Writing Without Words](http://www.stefanieposavec.com/writing-without-words/) is a visualization I find myself thinking about over and over. Her visualizations of [Kerouac's On the Road](https://www.brainpickings.org/2009/05/07/writing-without-words/), in particular Literary Organism, seem to pass by my eyes almost monthly in books and articles. Here though, I'm going to recreate one of the more technically simple ones: [Sentence Drawings](http://www.notcot.com/images/2008/04/Sentence-Drawings-Poster.jpg).
+
+
+```{r}
+library(tidyverse)
+library(tidytext)
+library(stringr)
+```
+
+
+With only a week left to Christmas, I chose what happend to be the current top book at Project Gutenberg: [A Christmas Carol, by Charles Dickens](https://www.gutenberg.org/cache/epub/46/pg46.txt). There is a [a nice R package to download Project Gutenberg books](https://cran.r-project.org/web/packages/gutenbergr/index.html), but I'm going the manual route to allow you, dear reader, to plug your own text easily.
+
+There is some metadata and license in the original file. I manually picked a starting and an ending string in the file and kept only the content parts in the middle. You could, perhaps even should, clean up the text a little more carefully if you intend to print or present this for your bookworm friends. Anyways, if you're want to use some entirely different data,fill the `text` variable with whatever text you want and go from there.
+
+
+```{r, cache=TRUE}
+text <- readLines(url('https://www.gutenberg.org/cache/epub/46/pg46.txt')) %>%
+  paste0(collapse  = ' ') %>%
+  str_replace(".*Produced by Jose Menendez", '') %>%
+  str_replace('End of the Project Gutenberg.*', '')
+```
+
+Next, I used the [tidytext package](https://www.tidytextmining.com/) to get sentences out of the text. I wasn't sure what to use for colors yet. One option could be to use some sentiment variable. I was aiming for one per sentence, so word-by-word sentiments was not going to work. I also wasn't going to spend too much time on figuring out a sentence-by-sentence classification. In the end, I settled for a negative-positive score for each sentence. I read each word from the sentence and used the the `afinn` sentiment data set. The code does this in a kind of a roundabout way -- from tidy sentences via words and back again. Maybe there's a neat way to do the same using `map`, but this works.
+
+
+```{r}
+df <- tibble(text) %>%
+  unnest_tokens(sentence, text, token = 'sentences') %>%
+  mutate(sentence.id = row_number()) %>%
+  unnest_tokens(word, sentence, drop=FALSE) %>%
+  left_join(get_sentiments('afinn'), by='word') %>%
+  group_by(sentence.id) %>%
+  summarize(sentence = first(sentence),
+            n.words = n(),
+            sentiment = coalesce(mean(score, na.rm = TRUE), 0)) %>%
+  mutate(n.characters = str_length(sentence)) %>%
+  arrange(sentence.id)
+```
+
+The pipeline above gives a data frame with a row for each `sentence`. Each row has a `sentence.id` which indicates the order of sentences, `n.words` which states how many words the sentence has, `n.characters` which holds the number of characters in the sentence, and the `sentiment` which holds how negative-positive the sentence is.
+
+Time to plot. The idea is to start from some origin (I chose 0,0) and step the amount of words in a direction before turning ninety degrees.
+
+ * `d.x` and `d.y` holds how far the _current_ sentence will take us in both dimensions. Some simple trigonometry does the trick, rotating a full cycle every four sentences.
+ * The end points for the current sentence are the cumulative distance in both dimensions travelled so far, and...
+ * The starting points are the previous end points
+ 
+With this in place, time to plot each start/end pair as a segment, with a little dot for start and end points as special markers.
+  
+```{r, echo=TRUE}
+plot.out <- df %>%
+  mutate(d.x = round(n.words * cos(2 * pi * sentence.id / 4)),
+         d.y = round(n.words * sin(2 * pi * sentence.id / 4))) %>%
+  mutate(end.x = cumsum(d.x),
+         end.y = cumsum(d.y),
+         start.x = lag(end.x, default = 0),
+         start.y = lag(end.y, default = 0)) %>%
+  {
+    ggplot(., aes(start.x, start.y, xend = end.x, yend = end.y)) +
+      geom_point(data = filter(., sentence.id == min(sentence.id))) +
+      geom_point(data = filter(., sentence.id == max(sentence.id)), aes(end.x, end.y)) +
+      geom_segment() +
+      coord_equal() +
+      theme_void()
+  }
+
+plot.out
+```
+  
+  
+
+There we go, not too bad. Now for colors. In the spirit of the original, I tried a discrete palette. I discretized the sentiment score, showing one color for negative, another for neutrual and a third for positive.
+
+```{r}
+plot.out +
+  aes(color = factor(sign(sentiment))) +
+  scale_color_brewer(palette = 'Set1')
+```
+
+  
+I also tried the continuous sentiment score. The suggestion below isn't too bad, but I would want to find a gradient with a darker midpoint if I was going with this.
+
+```{r}
+plot.out +
+  aes(color = sentiment) +
+  scale_color_distiller(palette = 'RdYlBu', direction=1)
+```
+
+
+My personal preference though is using a gradient to show how far into the book the line has come. Together with some winter-ish colors, this gave a calm Christmasy impression.
+
+```{r}
+plot.out +
+  aes(color = sentence.id) +
+  scale_color_gradient(low='#7BC6CC', high='#BE93C5')
+```
+
+
+You could of course also play around with settings other than color. For example, changing the 4-directions-to-a-cycle to a larger number gives a bunch of squiggles.
+
+```{r}
+df %>%
+  mutate(d.x = round(n.words * cos(2 * pi * sentence.id / 15)),
+         d.y = round(n.words * sin(2 * pi * sentence.id / 15))) %>%
+  mutate(end.x = cumsum(d.x),
+         end.y = cumsum(d.y),
+         start.x = lag(end.x, default = 0),
+         start.y = lag(end.y, default = 0)) %>%
+  {
+    ggplot(., aes(start.x, start.y, xend = end.x, yend = end.y)) +
+      geom_point(data = filter(., sentence.id == min(sentence.id))) +
+      geom_point(data = filter(., sentence.id == max(sentence.id)), aes(end.x, end.y)) +
+      geom_segment() +
+      coord_equal() +
+      theme_void()
+  }
+
+```
+
+Or you could go Sierpinski-like by using only three steps per cycle.
+
+
+```{r}
+df %>%
+  mutate(d.x = round(n.words * cos(2 * pi * sentence.id / 3)),
+         d.y = round(n.words * sin(2 * pi * sentence.id / 3))) %>%
+  mutate(end.x = cumsum(d.x),
+         end.y = cumsum(d.y),
+         start.x = lag(end.x, default = 0),
+         start.y = lag(end.y, default = 0)) %>%
+  {
+    ggplot(., aes(start.x, start.y, xend = end.x, yend = end.y)) +
+      geom_point(data = filter(., sentence.id == min(sentence.id))) +
+      geom_point(data = filter(., sentence.id == max(sentence.id)), aes(end.x, end.y)) +
+      geom_segment() +
+      coord_equal() +
+      theme_void()
+  }
+
+```
+
+
+Anyway, procrastinating with colors and settings is a too-common thing of mine so I decided to leave it here. I exported to SVG and polished in Inkscape. When there, I made sure to to change the linecap of the stroke into the rounded one, without which the corners are jagged. Zoom in to a joint to make sure it looks smooth.
+
+```{r}
+ggsave('out.svg', width=8, height=12)
+```
+
+
