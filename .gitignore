@@ -1,1 +1,4 @@
 *.nb.html
+*_cache
+*_files
+*.mid
