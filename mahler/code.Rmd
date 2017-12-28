@@ -39,7 +39,9 @@ df.tracks <- df.song %>%
 df.notes <- getMidiNotes(df.song) %>%
   inner_join(df.tracks, by='track') 
 
-df.notes
+df.notes %>%
+  arrange(time) %>%
+  head(50)
 ```
 
 _(I'm sure that MIDI files in general are not accurate representations of original scores. Sometimes though, perfect is the enemy of good and done is better than perfect.)_
