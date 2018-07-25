@@ -1,0 +1,196 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+At the time of writing (July 2018), there is some three months left until the Swedish national election. Given all the media about it, I decided to dig up last election's results and chop some charts.
+
+I was interested in how political sympathies vary geographically. Sweden has eight parties in the parliment, which is quite different from the US two party system I usually stumble on in visualizations. There is also less pronounced differences geographically, but I decided to emphasize the ones that exist. Finally, I wanted something different than the usual choropleth map and instead try some geographical smoothing, aiming for fuzzy but sticky results.
+
+The result:
+
+![](https://raw.githubusercontent.com/halhen/viz-pub/master/se-election-smooth/out.png)
+
+Here's a short reproducible write-up on what I di.
+
+```{r}
+library(tidyverse)
+library(sf)
+library(mgcv)
+```
+
+
+# Get the data
+
+First, I got the official election count. There are about 6000 individual election districts in Sweden, each with about a thousand voters. We have official counts for nine individual parties, eight of which got more than the 4% cutoff to get into parliment. There's also data for "Other" parties as well as invalid votes, which I ignored.
+
+I read the data into a tidy data frame with the district code (2 digit county code, 2 digit municipality code, and a 4 digit district code within each municipality), the party abbreviation and finally the number and proportion of votes given for each.
+
+
+```{r}
+df <- read_csv2('https://data.val.se/val/val2014/statistik/2014_riksdagsval_per_valdistrikt.skv') %>%
+  mutate(district = sprintf("%02d%02d%04d", as.integer(LAN), as.integer(KOM), as.integer(VALDIST))) %>%
+  select(district, matches(' tal')) %>%
+  gather(party, count, -district) %>%
+  mutate(party = str_replace(party, ' .*', ''))  %>%
+  filter(! (party %in% c('BL', 'OG'))) %>% # Remove invalid votes from count
+  group_by(district) %>%
+  mutate(p = count / sum(count)) %>%
+  ungroup() %>%
+  mutate(country.p = count / sum(count)) %>%
+  group_by(party) %>%
+  mutate(country.p = sum(country.p)) %>%
+  ungroup() %>%
+  filter(party != 'OVR') 
+```
+
+
+
+
+Next, I needed to figure out how the districts are distributed throughout Sweden. The election authorities provide a shapefile which maps each district geographically.
+
+
+```{r}
+
+if (!file.exists('valgeografi_valdistrikt.shp')) {
+  download.file('https://data.val.se/val/val2014/statistik/gis/valgeografi_valdistrikt.zip', 'shapefile.zip')
+  unzip('shapefile.zip')
+}
+
+shp <- sf::read_sf('valgeografi_valdistrikt.shp')
+
+```
+
+Finally, I read another shapefile to describe the 21 counties in Sweden, which I'll draw on the map to guide the eye a bit. This data could by all means be aggregated from the district shapefile and voting data via the `sf::st_union` function. However, this function turned out to be insufferably slow, and I chose the faster route of downloading a ready made data set.
+
+
+```{r}
+
+if (!file.exists('alla_lan.shp')) {
+  download.file('https://data.val.se/val/val2010/statistik/gis/alla_lan.zip', 'counties.zip')
+  unzip('counties.zip')
+}
+
+
+shp.counties <- read_sf('alla_lan.shp') %>%
+  st_transform(st_crs(shp)) # Make sure the coordinate reference system matches
+
+```
+
+
+
+
+# Crunch some numbers
+
+
+Now, the plan was a follows:
+
+ 1. Simplify the mapping data into a single XY coordinate for each voting district.
+ 2. For each party, smooth the variation of votes over the 2D map
+ 3. Figure out a metric that highlights regional difference and plot the result
+
+
+First, simplify the map data. Here, I simply picked the center point of each district and extract the X and Y coordinates.
+
+
+```{r}
+shp.simplified <- shp %>%
+  mutate(center = st_centroid(geometry),
+         X = map_dbl(center, 1),
+         Y = map_dbl(center, 2))
+```
+
+
+Second: I joined each district's election results to it's geographic information. This gave me the `X`, `Y` and `p` (for proportion of votes) values I'm looking to smooth.
+
+
+```{r}
+df.agg <- shp.simplified %>%
+  inner_join(df, by=c('VD' = 'district'))
+```
+
+Now, for the actual smoothing, I'm going to use a [Generalized Additive Model](https://petolau.github.io/Analyzing-double-seasonal-time-series-with-GAM-in-R/). Oversimplifying, a GAM is like a regression model on steroids. In particular, it's a simple way to get all kinds of non-linear smooth curves mapped to the data. You can also get the smoothed curves in 2D -- effectively smoothing the voting results by geography. One downside with a GAM compared to a regular linear regression is that it's practically impossible to interpret the resulting parameters of the model. Here though, I don't care about those.
+
+The model itself is quite simple: I mapped the `X` and `Y` coordinates to the percentage of votes. There is one parameter for the smoother to set, `k`. This is the number of "knots" for a smooth function, which basically is how complex I'll allow the fitted curve to be (higher number = more flexible). After some trial and error, I settled on 25 which naively is about 5 knots in each dimension for a 2D smoother. 
+
+For simplicity, I chose to train one model per party. I'm sure there is some way to train a single model for all parties, perhaps leveraging data between parties for more precise analyses. For my purposes where, simple beats perfect.
+
+
+```{r}
+
+df.models <- df.agg %>%
+  group_by(party) %>%
+  nest() %>%
+  mutate(model = map(data, ~ gam(p ~ s(X, Y, k=25), data=.)))
+
+```
+
+
+Third, get a plot going. I chose to generate a grid of points over Sweden. `st_make_grid` will generate such a grid for the bounding box of your map. By default, it will generate polygons (squares) which will cover the whole area. Generating polygons made the code painfully slow so I instead settled to generate a grid of points. Having had proper polygons would make for a crisper and more precise map.
+
+
+```{r}
+
+se.grid <- st_make_grid(shp, n = c(100, 300), what='centers') %>%
+  st_intersection(shp) # Keep only the points actually within Sweden
+
+```
+
+
+Now, let's set up one grid for each party and have the model give (`predict`) the smoothed percentage of votes for each point.
+
+```{r}
+df.smooth <- se.grid %>%
+  as.data.frame() %>%
+  mutate(X = map_dbl(geometry, 1),
+         Y = map_dbl(geometry, 2)) %>%
+  nest() %>%
+  with(expand.grid(data=data, party=df.models$party)) %>%
+  inner_join(df.models %>% select(party, model), by='party') %>%
+  mutate(pred = map2(model, data, predict)) %>%
+  unnest(data, pred) %>%
+  st_as_sf(crs = st_crs(shp.counties))
+```
+
+Finally, let's plot. For the smoothed values, I chose the regular, fast `geom_raster`. I also added the summarized counties shapefile, both to get some county borders for visual refence and to get a nice `sf` projection. There are some artefacts from the different shapefiles and/or approximate point-wise (as opposed to polygon) grid.
+
+For the fill value, I wanted to highlight differences. The straight vote percentage gave a chart that mostly showed how well the party did in the election in total. Instead, to highlight regional differences, I used the relative popularity of each party over Sweden. In this color scheme, a deep red means that the party got twice as many votes than the country total, while a deep blue shows that they got only half. This definitely paints a different (though, one might argue, exaggerated) picture than the total vote would.
+
+```{r}
+df.smooth %>%
+  inner_join(df %>%
+               group_by(party) %>%
+               summarize(country.p = first(country.p)) %>%
+               mutate(party.desc = sprintf('%s %.1f%%', party, round(country.p * 100, 1)))) %>%
+  mutate(party.desc = reorder(party.desc, -country.p, order=TRUE)) %>%
+  group_by(party) %>%
+  mutate(d = log(pred, 2) - log(mean(pred), 2),
+         d = pmin(d, 1), # Limit to 0.5x - 2x
+         d = pmax(d, -1)) %>%
+  ggplot() +
+    geom_raster(aes(X, Y, fill=d)) +
+    geom_sf(data=shp.counties, color='black', fill=NA, size=0.05) +
+    scale_x_continuous(breaks=NULL) +
+    scale_y_continuous(breaks=NULL) +
+    scale_fill_distiller(palette = "RdBu", name='', breaks=log(c(0.5, 1, 2), 2), labels=function(x){paste0(2^x, 'x')}) +
+    labs(x = "", y = "", title='Sweden 2014 election', subtitle='Each party\'s relative popularity in Sweden') +
+    facet_wrap(~ party.desc) +
+    theme_void() +
+    theme(panel.grid = element_line(color='white'))
+
+ggsave('out.svg', width=5, height=8)
+```
+
+
+# What's to be seen
+
+For any reader not intimitely familiar with Sweden and our politics (I'm not sure who's still reading), there are definitely some things jumping out:
+
+ * Norther Sweden are more left leaning, shown both for Sweden's largest party Social Democrats (S) and even more for The Left Party (V). The latter, by the way, also has a brighter spot in the traditionally working class city of Gothenburg.
+ * The three major cities (Stockholm, Gothenburg, Malmö) are predominantly liberal, seen most clearly for Liberals (previously called FP), but also the Moderate Party (M). Non-liberal parties with higher-than-expected popularity in the city are not the traditional Socialist/Social democrat parties, but instead Feminist Initiative (FI) and The Green Party (MP).
+ * KD (The Christian Democrats) have a bright red spot around Jönköping, the Swedish Bible Belt
+ * SD (The populist Sweden Democrats) have their their biggest following in southern Sweden
+ * C (The Center Party), with its roots as the farmer's party, still has it's main following in the rural areas.
+
+
+
